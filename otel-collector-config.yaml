@@ -8,6 +8,9 @@ receivers:
 
 processors:
   batch: {}
+  # Claude Code는 메트릭을 delta temporality로 내보내는데, prometheus_remote_write
+  # exporter는 delta counter를 (에러 없이) 버린다. cumulative로 변환해야 저장된다.
+  delta_to_cumulative: {}
 
 exporters:
   prometheus_remote_write:
@@ -22,7 +25,7 @@ service:
   pipelines:
     metrics:
       receivers: [otlp]
-      processors: [batch]
+      processors: [delta_to_cumulative, batch]
       exporters: [prometheus_remote_write]
     logs:
       receivers: [otlp]
