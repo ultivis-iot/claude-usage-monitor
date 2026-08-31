@@ -3,7 +3,7 @@
   "title": "Claude / Overview",
   "tags": ["claude"],
   "schemaVersion": 39,
-  "version": 4,
+  "version": 5,
   "refresh": "30s",
   "timezone": "browser",
   "time": { "from": "now-24h", "to": "now" },
@@ -14,23 +14,15 @@
   "panels": [
     {
       "id": 1, "type": "stat", "title": "토큰 (24h)",
-      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 0 },
       "datasource": { "type": "prometheus", "uid": "victoriametrics" },
       "targets": [ { "expr": "sum(increase(claude_code_token_usage_tokens_total[24h]))", "refId": "A" } ],
       "fieldConfig": { "defaults": { "unit": "short", "decimals": 1, "color": { "mode": "fixed", "fixedColor": "purple" } }, "overrides": [] },
       "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
     },
     {
-      "id": 2, "type": "stat", "title": "비용 (24h)",
-      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
-      "targets": [ { "expr": "sum(increase(claude_code_cost_usage_USD_total[24h]))", "refId": "A" } ],
-      "fieldConfig": { "defaults": { "unit": "currencyUSD", "decimals": 2, "color": { "mode": "fixed", "fixedColor": "green" } }, "overrides": [] },
-      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } }
-    },
-    {
       "id": 3, "type": "stat", "title": "활성 멤버 (24h)",
-      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 0 },
       "datasource": { "type": "prometheus", "uid": "victoriametrics" },
       "targets": [ { "expr": "count(sum by (member) (increase(claude_code_token_usage_tokens_total[24h])) > 0) or vector(0)", "refId": "A" } ],
       "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "fixed", "fixedColor": "blue" } }, "overrides": [] },
@@ -38,7 +30,7 @@
     },
     {
       "id": 4, "type": "stat", "title": "🟢 지금 활성 (10분)",
-      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "gridPos": { "h": 4, "w": 8, "x": 16, "y": 0 },
       "datasource": { "type": "prometheus", "uid": "victoriametrics" },
       "targets": [ { "expr": "count(sum by (member) (increase(claude_code_token_usage_tokens_total[10m])) > 0) or vector(0)", "refId": "A" } ],
       "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [ { "color": "text", "value": null }, { "color": "green", "value": 1 } ] } }, "overrides": [] },
@@ -46,30 +38,28 @@
     },
 
     {
-      "id": 10, "type": "table", "title": "🔑 계정 현황 — 남은 사용량 · 초기화 시각 · 연결된 사용자 · PC",
+      "id": 10, "type": "table", "title": "🔑 계정 현황 — 남은 사용량 · 초기화 시각 · 연결된 사용자(전원) · PC",
       "gridPos": { "h": 12, "w": 24, "x": 0, "y": 4 },
       "datasource": { "type": "prometheus", "uid": "victoriametrics" },
       "targets": [
-        { "expr": "100 - max by (account) (last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]))", "format": "table", "instant": true, "refId": "A" },
-        { "expr": "100 - max by (account) (last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]))", "format": "table", "instant": true, "refId": "B" },
-        { "expr": "max by (account) (last_over_time(claude_limit_resets_at{window=\"seven_day\"}[45m])) * 1000", "format": "table", "instant": true, "refId": "C" },
-        { "expr": "label_replace(sum by (user_email, member, host_name) (increase(claude_code_token_usage_tokens_total[6h]) > 0), \"account\", \"$1\", \"user_email\", \"(.+)\")", "format": "table", "instant": true, "refId": "D" },
-        { "expr": "last_over_time(claude_limit_up[45m])", "format": "table", "instant": true, "refId": "E" }
+        { "expr": "(100 - max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]))) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (100 - max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]))) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")", "format": "table", "instant": true, "refId": "A" },
+        { "expr": "(100 - max by (account)(last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]))) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (100 - max by (account)(last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]))) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")", "format": "table", "instant": true, "refId": "B" },
+        { "expr": "(max by (account)(last_over_time(claude_limit_resets_at{window=\"seven_day\"}[45m])) * 1000) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_resets_at{window=\"seven_day\"}[45m])) * 1000) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")", "format": "table", "instant": true, "refId": "C" },
+        { "expr": "label_replace(sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[24h])), \"account\", \"$1\", \"user_email\", \"(.+)\")", "format": "table", "instant": true, "refId": "D" }
       ],
       "transformations": [
-        { "id": "joinByField", "options": { "byField": "account", "mode": "outer" } },
+        { "id": "merge", "options": {} },
         { "id": "organize", "options": {
-          "excludeByName": { "Time": true, "Time 1": true, "Time 2": true, "Time 3": true, "Time 4": true, "Time 5": true, "__name__": true },
-          "indexByName": { "account": 0, "Value #A": 1, "Value #B": 2, "Value #C": 3, "member": 4, "host_name": 5, "Value #D": 6, "Value #E": 7 },
-          "renameByName": { "account": "계정", "Value #A": "Weekly 남은%", "Value #B": "5h 남은%", "Value #C": "초기화(Weekly)", "member": "사용자", "host_name": "PC", "Value #D": "최근6h 토큰", "Value #E": "상태" }
+          "excludeByName": { "Time": true, "user_email": true, "__name__": true },
+          "indexByName": { "account": 0, "Value #A": 1, "Value #B": 2, "Value #C": 3, "member": 4, "host_name": 5, "Value #D": 6 },
+          "renameByName": { "account": "계정", "Value #A": "Weekly 남은%", "Value #B": "5h 남은%", "Value #C": "초기화(Weekly)", "member": "사용자", "host_name": "PC", "Value #D": "토큰(24h)" }
         } }
       ],
       "fieldConfig": { "defaults": { "decimals": 0 }, "overrides": [
         { "matcher": { "id": "byName", "options": "Weekly 남은%" }, "properties": [ { "id": "unit", "value": "percent" }, { "id": "min", "value": 0 }, { "id": "max", "value": 100 }, { "id": "custom.cellOptions", "value": { "type": "gauge", "mode": "gradient" } }, { "id": "custom.width", "value": 180 }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "orange", "value": 10 }, { "color": "yellow", "value": 25 }, { "color": "green", "value": 40 } ] } } ] },
         { "matcher": { "id": "byName", "options": "5h 남은%" }, "properties": [ { "id": "unit", "value": "percent" }, { "id": "custom.cellOptions", "value": { "type": "color-text" } }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "yellow", "value": 20 }, { "color": "green", "value": 40 } ] } } ] },
         { "matcher": { "id": "byName", "options": "초기화(Weekly)" }, "properties": [ { "id": "unit", "value": "dateTimeAsIso" } ] },
-        { "matcher": { "id": "byName", "options": "최근6h 토큰" }, "properties": [ { "id": "unit", "value": "short" } ] },
-        { "matcher": { "id": "byName", "options": "상태" }, "properties": [ { "id": "mappings", "value": [ { "type": "value", "options": { "1": { "text": "정상", "color": "green" }, "0": { "text": "오류", "color": "red" } } } ] }, { "id": "custom.cellOptions", "value": { "type": "color-background" } }, { "id": "custom.width", "value": 70 } ] },
+        { "matcher": { "id": "byName", "options": "토큰(24h)" }, "properties": [ { "id": "unit", "value": "short" } ] },
         { "matcher": { "id": "byName", "options": "계정" }, "properties": [ { "id": "links", "value": [ { "title": "이 계정 상세", "url": "/d/claude-by-account?var-account=${__data.fields.계정}" } ] } ] },
         { "matcher": { "id": "byName", "options": "사용자" }, "properties": [ { "id": "links", "value": [ { "title": "이 멤버 상세", "url": "/d/claude-by-person?var-member=${__data.fields.사용자}" } ] } ] }
       ] },

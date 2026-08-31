@@ -1,15 +1,30 @@
 {
   "uid": "claude-by-account",
   "title": "Claude / By Account",
-  "tags": ["claude"],
+  "tags": [
+    "claude"
+  ],
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "1m",
   "timezone": "browser",
-  "time": { "from": "now-24h", "to": "now" },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
   "links": [
-    { "title": "📊 Overview", "type": "link", "url": "/d/claude-overview", "icon": "dashboard" },
-    { "title": "💻 By Person", "type": "link", "url": "/d/claude-by-person", "icon": "dashboard" }
+    {
+      "title": "📊 Overview",
+      "type": "link",
+      "url": "/d/claude-overview",
+      "icon": "dashboard"
+    },
+    {
+      "title": "💻 By Person",
+      "type": "link",
+      "url": "/d/claude-by-person",
+      "icon": "dashboard"
+    }
   ],
   "templating": {
     "list": [
@@ -17,8 +32,14 @@
         "name": "account",
         "label": "Claude 계정",
         "type": "query",
-        "datasource": { "type": "prometheus", "uid": "victoriametrics" },
-        "query": { "query": "label_values(claude_code_token_usage_tokens_total, user_email)", "refId": "var-account" },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "victoriametrics"
+        },
+        "query": {
+          "query": "label_values(claude_code_token_usage_tokens_total, user_email)",
+          "refId": "var-account"
+        },
         "refresh": 2,
         "includeAll": true,
         "multi": false,
@@ -31,8 +52,16 @@
       "id": 1,
       "type": "gauge",
       "title": "Weekly limit",
-      "gridPos": { "h": 7, "w": 8, "x": 0, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "victoriametrics"
+      },
       "targets": [
         {
           "expr": "max by (account) (last_over_time(claude_limit_utilization{window=\"seven_day\", account=~\"$account\"}[30m]))",
@@ -49,24 +78,47 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 70 },
-              { "color": "red", "value": 90 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
       }
     },
     {
       "id": 2,
       "type": "gauge",
       "title": "5시간 세션 limit",
-      "gridPos": { "h": 7, "w": 8, "x": 8, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 8,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "victoriametrics"
+      },
       "targets": [
         {
           "expr": "max by (account) (last_over_time(claude_limit_utilization{window=\"five_hour\", account=~\"$account\"}[30m]))",
@@ -83,24 +135,47 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 70 },
-              { "color": "red", "value": 90 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
       }
     },
     {
       "id": 3,
       "type": "stat",
       "title": "Weekly 초기화 시각",
-      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "victoriametrics"
+      },
       "targets": [
         {
           "expr": "max by (account) (last_over_time(claude_limit_resets_at{window=\"seven_day\", account=~\"$account\"}[30m])) * 1000",
@@ -110,11 +185,19 @@
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "dateTimeAsIso" },
+        "defaults": {
+          "unit": "dateTimeAsIso"
+        },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "value_and_name"
       }
     },
@@ -122,8 +205,16 @@
       "id": 4,
       "type": "timeseries",
       "title": "이 계정을 누가 쓰나 (tokens/h, 멤버×머신)",
-      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 7 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "victoriametrics"
+      },
       "targets": [
         {
           "expr": "sum by (member, host_name) (rate(claude_code_token_usage_tokens_total{user_email=~\"$account\"}[10m])) * 3600",
@@ -132,19 +223,38 @@
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "short", "custom": { "fillOpacity": 10 } },
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "fillOpacity": 10
+          }
+        },
         "overrides": []
       },
       "options": {
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["sum"] }
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "sum"
+          ]
+        }
       }
     },
     {
       "id": 5,
       "type": "bargauge",
       "title": "모델별 토큰 (최근 7일)",
-      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 7 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "victoriametrics"
+      },
       "targets": [
         {
           "expr": "sum by (model) (increase(claude_code_token_usage_tokens_total{user_email=~\"$account\"}[7d]))",
@@ -154,42 +264,38 @@
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "short", "decimals": 0 },
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        },
         "overrides": []
       },
       "options": {
         "orientation": "horizontal",
         "displayMode": "gradient",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
-      }
-    },
-    {
-      "id": 6,
-      "type": "timeseries",
-      "title": "시간당 비용 (USD)",
-      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 16 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
-      "targets": [
-        {
-          "expr": "sum (increase(claude_code_cost_usage_USD_total{user_email=~\"$account\"}[1h]))",
-          "legendFormat": "cost/h",
-          "refId": "A"
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
         }
-      ],
-      "fieldConfig": {
-        "defaults": { "unit": "currencyUSD", "custom": { "fillOpacity": 10 } },
-        "overrides": []
-      },
-      "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" }
       }
     },
     {
       "id": 7,
       "type": "table",
       "title": "세션별 토큰 (최근 24시간)",
-      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 16 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "victoriametrics"
+      },
       "targets": [
         {
           "expr": "sort_desc(sum by (session_id, member, host_name) (increase(claude_code_token_usage_tokens_total{user_email=~\"$account\"}[24h])))",
@@ -199,7 +305,10 @@
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "short", "decimals": 0 },
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        },
         "overrides": []
       },
       "options": {}

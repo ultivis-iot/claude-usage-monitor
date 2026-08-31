@@ -1,15 +1,30 @@
 {
   "uid": "claude-by-person",
   "title": "Claude / By Person",
-  "tags": ["claude"],
+  "tags": [
+    "claude"
+  ],
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "1m",
   "timezone": "browser",
-  "time": { "from": "now-7d", "to": "now" },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
   "links": [
-    { "title": "📊 Overview", "type": "link", "url": "/d/claude-overview", "icon": "dashboard" },
-    { "title": "👤 By Account", "type": "link", "url": "/d/claude-by-account", "icon": "dashboard" }
+    {
+      "title": "📊 Overview",
+      "type": "link",
+      "url": "/d/claude-overview",
+      "icon": "dashboard"
+    },
+    {
+      "title": "👤 By Account",
+      "type": "link",
+      "url": "/d/claude-by-account",
+      "icon": "dashboard"
+    }
   ],
   "templating": {
     "list": [
@@ -17,8 +32,14 @@
         "name": "member",
         "label": "멤버",
         "type": "query",
-        "datasource": { "type": "prometheus", "uid": "victoriametrics" },
-        "query": { "query": "label_values(claude_code_token_usage_tokens_total, member)", "refId": "var-member" },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "victoriametrics"
+        },
+        "query": {
+          "query": "label_values(claude_code_token_usage_tokens_total, member)",
+          "refId": "var-member"
+        },
         "refresh": 2,
         "includeAll": true,
         "multi": false,
@@ -28,8 +49,14 @@
         "name": "host",
         "label": "머신",
         "type": "query",
-        "datasource": { "type": "prometheus", "uid": "victoriametrics" },
-        "query": { "query": "label_values(claude_code_token_usage_tokens_total{member=~\"$member\"}, host_name)", "refId": "var-host" },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "victoriametrics"
+        },
+        "query": {
+          "query": "label_values(claude_code_token_usage_tokens_total{member=~\"$member\"}, host_name)",
+          "refId": "var-host"
+        },
         "refresh": 2,
         "includeAll": true,
         "multi": true,
@@ -42,8 +69,16 @@
       "id": 1,
       "type": "stat",
       "title": "최근 7일 토큰",
-      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "victoriametrics"
+      },
       "targets": [
         {
           "expr": "sum(increase(claude_code_token_usage_tokens_total{member=~\"$member\", host_name=~\"$host\"}[7d]))",
@@ -52,40 +87,36 @@
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "short", "decimals": 1 },
+        "defaults": {
+          "unit": "short",
+          "decimals": 1
+        },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
-      }
-    },
-    {
-      "id": 2,
-      "type": "stat",
-      "title": "최근 7일 비용 (USD)",
-      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
-      "targets": [
-        {
-          "expr": "sum(increase(claude_code_cost_usage_USD_total{member=~\"$member\", host_name=~\"$host\"}[7d]))",
-          "instant": true,
-          "refId": "A"
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
         }
-      ],
-      "fieldConfig": {
-        "defaults": { "unit": "currencyUSD", "decimals": 2 },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
       }
     },
     {
       "id": 3,
       "type": "bargauge",
       "title": "모델별 토큰 (최근 7일)",
-      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "victoriametrics"
+      },
       "targets": [
         {
           "expr": "sum by (model) (increase(claude_code_token_usage_tokens_total{member=~\"$member\", host_name=~\"$host\"}[7d]))",
@@ -95,21 +126,38 @@
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "short", "decimals": 0 },
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        },
         "overrides": []
       },
       "options": {
         "orientation": "horizontal",
         "displayMode": "gradient",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
       }
     },
     {
       "id": 4,
       "type": "timeseries",
       "title": "어느 Claude 계정으로 쓰나 (tokens/h) — 계정 전환 이력이 여기서 보임",
-      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 6 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "victoriametrics"
+      },
       "targets": [
         {
           "expr": "sum by (user_email) (rate(claude_code_token_usage_tokens_total{member=~\"$member\", host_name=~\"$host\"}[10m])) * 3600",
@@ -118,19 +166,38 @@
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "short", "custom": { "fillOpacity": 10 } },
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "fillOpacity": 10
+          }
+        },
         "overrides": []
       },
       "options": {
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["sum"] }
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "sum"
+          ]
+        }
       }
     },
     {
       "id": 5,
       "type": "timeseries",
       "title": "머신별 사용 (tokens/h) — 윈도우/리눅스 분해",
-      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 6 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 6
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "victoriametrics"
+      },
       "targets": [
         {
           "expr": "sum by (host_name, os_user) (rate(claude_code_token_usage_tokens_total{member=~\"$member\", host_name=~\"$host\"}[10m])) * 3600",
@@ -139,19 +206,38 @@
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "short", "custom": { "fillOpacity": 10 } },
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "fillOpacity": 10
+          }
+        },
         "overrides": []
       },
       "options": {
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["sum"] }
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "sum"
+          ]
+        }
       }
     },
     {
       "id": 6,
       "type": "table",
       "title": "세션별 토큰 (최근 24시간)",
-      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 15 },
-      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "victoriametrics"
+      },
       "targets": [
         {
           "expr": "sort_desc(sum by (session_id, host_name, user_email) (increase(claude_code_token_usage_tokens_total{member=~\"$member\", host_name=~\"$host\"}[24h])))",
@@ -161,7 +247,10 @@
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "short", "decimals": 0 },
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        },
         "overrides": []
       },
       "options": {}
