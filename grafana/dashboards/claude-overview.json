@@ -51,8 +51,16 @@
         { "id": "merge", "options": {} },
         { "id": "organize", "options": {
           "excludeByName": { "Time": true, "user_email": true, "__name__": true },
-          "indexByName": { "account": 0, "Value #A": 1, "Value #B": 2, "Value #C": 3, "member": 4, "host_name": 5, "Value #D": 6 },
           "renameByName": { "account": "계정", "Value #A": "Weekly 남은%", "Value #B": "5h 남은%", "Value #C": "초기화(Weekly)", "member": "사용자", "host_name": "PC", "Value #D": "토큰(24h)" }
+        } },
+        { "id": "groupToNestedTable", "options": {
+          "showSubframeHeaders": true,
+          "fields": {
+            "계정": { "aggregations": [], "operation": "groupby" },
+            "Weekly 남은%": { "aggregations": [], "operation": "groupby" },
+            "5h 남은%": { "aggregations": [], "operation": "groupby" },
+            "초기화(Weekly)": { "aggregations": [], "operation": "groupby" }
+          }
         } }
       ],
       "fieldConfig": { "defaults": { "decimals": 0 }, "overrides": [
