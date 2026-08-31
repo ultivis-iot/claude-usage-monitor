@@ -45,10 +45,10 @@ printf '%s' "$OUT" | grep -q "% used" || fail "usage 출력 파싱 불가(미로
 
 METRICS=""
 while IFS= read -r line; do
-  case "$line" in *"% used"*"resets"*) ;; *) continue ;; esac
+  # "% used"만 있으면 처리 (session 0%처럼 resets가 없는 줄도 사용률은 기록)
+  case "$line" in *"% used"*) ;; *) continue ;; esac
   label=$(printf '%s' "$line" | sed -E 's/^[^A-Za-z]*Current (.*): [0-9]+% used.*/\1/')
   pct=$(printf '%s'   "$line" | sed -E 's/.*: ([0-9]+)% used.*/\1/')
-  datestr=$(printf '%s' "$line" | sed -E 's/.*resets (.*) \(UTC\).*/\1/')
   case "$label" in
     session)              win=five_hour ;;
     "week (all models)")  win=seven_day ;;
@@ -57,8 +57,12 @@ while IFS= read -r line; do
   esac
   [ -n "$pct" ] || continue
   METRICS+="claude_limit_utilization{account=\"$ACCOUNT\",window=\"$win\"} $pct"$'\n'
-  epoch=$(date -u -d "$datestr UTC" +%s 2>/dev/null || true)
-  [ -n "$epoch" ] && METRICS+="claude_limit_resets_at{account=\"$ACCOUNT\",window=\"$win\"} $epoch"$'\n'
+  # resets 날짜가 있으면 epoch로 변환해 함께 기록
+  case "$line" in *resets*)
+    datestr=$(printf '%s' "$line" | sed -E 's/.*resets (.*) \(UTC\).*/\1/')
+    epoch=$(date -u -d "$datestr UTC" +%s 2>/dev/null || true)
+    [ -n "$epoch" ] && METRICS+="claude_limit_resets_at{account=\"$ACCOUNT\",window=\"$win\"} $epoch"$'\n'
+  ;; esac
 done <<<"$OUT"
 
 [ -n "$METRICS" ] || fail "파싱된 윈도우 없음: $(printf '%s' "$OUT" | head -c 200)"
