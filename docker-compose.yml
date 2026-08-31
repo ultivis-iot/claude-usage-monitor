@@ -1,0 +1,64 @@
+services:
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:latest
+    container_name: victoriametrics
+    command:
+      - --storageDataPath=/storage
+      - --retentionPeriod=2y
+      - --httpListenAddr=:8428
+    volumes:
+      - vmdata:/storage
+    ports:
+      # 서버 로컬 전용 (poller가 localhost로 push, Grafana는 docker 네트워크로 접근)
+      - "127.0.0.1:8428:8428"
+    restart: unless-stopped
+
+  # 선택: 요청 단위 원본 이벤트(claude_code.api_request 등) 저장용.
+  # 필요 없으면 이 서비스와 collector의 logs 파이프라인을 제거해도 됨.
+  victorialogs:
+    image: victoriametrics/victoria-logs:latest
+    container_name: victorialogs
+    command:
+      - -storageDataPath=/storage
+      - -retentionPeriod=1y
+      - -httpListenAddr=:9428
+    volumes:
+      - vldata:/storage
+    ports:
+      # 서버 로컬 전용 (Grafana는 docker 네트워크로 접근)
+      - "127.0.0.1:9428:9428"
+    restart: unless-stopped
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "4317:4317"             # OTLP gRPC (각 PC의 Claude Code가 여기로 전송) — 외부 노출 필요
+      - "127.0.0.1:4318:4318"   # OTLP HTTP — 서버 로컬 디버그/스모크 테스트용
+    depends_on:
+      - victoriametrics
+      - victorialogs
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      - GF_INSTALL_PLUGINS=victoriametrics-logs-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - victoriametrics
+    restart: unless-stopped
+
+volumes:
+  vmdata:
+  vldata:
+  grafana-data:

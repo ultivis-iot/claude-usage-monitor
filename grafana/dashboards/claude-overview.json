@@ -1,0 +1,312 @@
+{
+  "uid": "claude-overview",
+  "title": "Claude / Overview",
+  "tags": ["claude"],
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1m",
+  "timezone": "browser",
+  "time": { "from": "now-24h", "to": "now" },
+  "links": [
+    { "title": "👤 By Account", "type": "link", "url": "/d/claude-by-account", "icon": "dashboard" },
+    { "title": "💻 By Person", "type": "link", "url": "/d/claude-by-person", "icon": "dashboard" }
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "type": "bargauge",
+      "title": "Weekly limit — 전체 계정",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        {
+          "expr": "max by (account) (claude_limit_utilization{window=\"seven_day\"})",
+          "legendFormat": "{{account}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 90 }
+            ]
+          },
+          "links": [
+            { "title": "이 계정 상세 보기", "url": "/d/claude-by-account?var-account=${__field.labels.account}" }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      }
+    },
+    {
+      "id": 2,
+      "type": "bargauge",
+      "title": "5시간 세션 limit — 전체 계정",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        {
+          "expr": "max by (account) (claude_limit_utilization{window=\"five_hour\"})",
+          "legendFormat": "{{account}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Weekly 초기화 시각",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        {
+          "expr": "max by (account) (claude_limit_resets_at{window=\"seven_day\"}) * 1000",
+          "legendFormat": "{{account}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "dateTimeAsIso" },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 6,
+      "type": "table",
+      "title": "🟢 지금 활성 — 누가 어느 계정을 쓰는 중인가 (최근 10분 활동 기준)",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        {
+          "expr": "sort_desc(sum by (member, host_name, os_user, user_email) (increase(claude_code_token_usage_tokens_total[10m])) > 0)",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "decimals": 0 },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "member" },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  { "title": "이 멤버 상세 보기", "url": "/d/claude-by-person?var-member=${__data.fields.member}" }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "user_email" },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  { "title": "이 계정 상세 보기", "url": "/d/claude-by-account?var-account=${__data.fields.user_email}" }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Value" },
+            "properties": [
+              { "id": "displayName", "value": "최근 10분 토큰" }
+            ]
+          }
+        ]
+      },
+      "options": {}
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "전체 토큰 흐름 (tokens/h, 계정별 stacked)",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        {
+          "expr": "sum by (user_email) (rate(claude_code_token_usage_tokens_total[10m])) * 3600",
+          "legendFormat": "{{user_email}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "fillOpacity": 30, "stacking": { "mode": "normal", "group": "A" } }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["sum"] }
+      }
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "최근 24시간 소비 랭킹 — 멤버×머신×계정 (클릭하면 상세로 이동)",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 25 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        {
+          "expr": "sort_desc(sum by (member, host_name, user_email) (increase(claude_code_token_usage_tokens_total[24h])))",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "decimals": 0 },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "member" },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  { "title": "이 멤버 상세 보기", "url": "/d/claude-by-person?var-member=${__data.fields.member}" }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "user_email" },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  { "title": "이 계정 상세 보기", "url": "/d/claude-by-account?var-account=${__data.fields.user_email}" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {}
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "🚦 계정 Poll 상태 (1=정상, 0=오류)",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 35 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        { "expr": "claude_limit_up", "legendFormat": "{{account}}", "instant": true, "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "오류", "color": "red" }, "1": { "text": "정상", "color": "green" } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "green", "value": 1 } ] },
+          "links": [
+            { "title": "이 계정 상세 보기", "url": "/d/claude-by-account?var-account=${__field.labels.account}" }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "textMode": "value_and_name",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      }
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "마지막 수집 경과 (초) — 값이 크면 poller 중단/계정 이상",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 35 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        { "expr": "round(time() - claude_limit_last_run_timestamp)", "legendFormat": "{{account}}", "instant": true, "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 1200 }, { "color": "red", "value": 1800 } ] }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "textMode": "value_and_name",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      }
+    },
+    {
+      "id": 9,
+      "type": "table",
+      "title": "계정 오류 상세 (http 코드: 200=정상, 401=토큰만료, 429=rate limit, 0=요청실패)",
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 41 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        { "expr": "claude_limit_http_code", "format": "table", "instant": true, "refId": "A" }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true }, "renameByName": { "account": "계정", "Value": "http_code" } } }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "decimals": 0 },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "http_code" },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  { "type": "value", "options": { "200": { "color": "green" }, "401": { "color": "red" }, "429": { "color": "orange" }, "0": { "color": "red" } } }
+                ]
+              },
+              { "id": "custom.cellOptions", "value": { "type": "color-background" } }
+            ]
+          }
+        ]
+      },
+      "options": {}
+    }
+  ]
+}
