@@ -1,0 +1,71 @@
+{
+  "uid": "claude-efficiency",
+  "title": "Claude / Efficiency",
+  "tags": ["claude"],
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1m",
+  "timezone": "browser",
+  "time": { "from": "now-7d", "to": "now" },
+  "links": [
+    { "title": "📊 Overview", "type": "link", "url": "/d/claude-overview", "icon": "dashboard" },
+    { "title": "👤 By Account", "type": "link", "url": "/d/claude-by-account", "icon": "dashboard" },
+    { "title": "💻 By Person", "type": "link", "url": "/d/claude-by-person", "icon": "dashboard" }
+  ],
+  "panels": [
+    {
+      "id": 1, "type": "table", "title": "멤버별 효율 종합 (최근 7일) — 토큰/라인 높을수록 작업 대비 토큰 관리 나쁨",
+      "gridPos": { "h": 13, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [
+        { "expr": "sum by (member) (increase(claude_code_session_count_total[7d]))", "format": "table", "instant": true, "refId": "A" },
+        { "expr": "sum by (member) (increase(claude_code_active_time_seconds_total[7d])) / 60", "format": "table", "instant": true, "refId": "B" },
+        { "expr": "sum by (member) (increase(claude_code_token_usage_tokens_total[7d]))", "format": "table", "instant": true, "refId": "C" },
+        { "expr": "sum by (member) (increase(claude_code_token_usage_tokens_total[7d])) / sum by (member) (increase(claude_code_session_count_total[7d]))", "format": "table", "instant": true, "refId": "D" },
+        { "expr": "sum by (member) (increase(claude_code_token_usage_tokens_total[7d])) / (sum by (member) (increase(claude_code_active_time_seconds_total[7d]))/3600)", "format": "table", "instant": true, "refId": "E" },
+        { "expr": "sum by (member) (increase(claude_code_lines_of_code_count_total[7d]))", "format": "table", "instant": true, "refId": "F" },
+        { "expr": "sum by (member) (increase(claude_code_token_usage_tokens_total[7d])) / clamp_min(sum by (member) (increase(claude_code_lines_of_code_count_total[7d])), 1)", "format": "table", "instant": true, "refId": "G" },
+        { "expr": "100 * sum by (member) (increase(claude_code_token_usage_tokens_total{type=\"cacheRead\"}[7d])) / sum by (member) (increase(claude_code_token_usage_tokens_total[7d]))", "format": "table", "instant": true, "refId": "H" }
+      ],
+      "transformations": [
+        { "id": "merge", "options": {} },
+        { "id": "organize", "options": {
+          "excludeByName": { "Time": true },
+          "indexByName": { "member": 0, "Value #A": 1, "Value #B": 2, "Value #C": 3, "Value #D": 4, "Value #E": 5, "Value #F": 6, "Value #G": 7, "Value #H": 8 },
+          "renameByName": { "member": "멤버", "Value #A": "세션", "Value #B": "활성(분)", "Value #C": "총 토큰", "Value #D": "세션당 토큰", "Value #E": "시간당 토큰", "Value #F": "코드 라인", "Value #G": "토큰/라인", "Value #H": "캐시재사용%" }
+        } }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 }, "overrides": [
+        { "matcher": { "id": "byName", "options": "활성(분)" }, "properties": [ { "id": "decimals", "value": 1 } ] },
+        { "matcher": { "id": "byName", "options": "토큰/라인" }, "properties": [ { "id": "custom.cellOptions", "value": { "type": "gauge", "mode": "gradient" } }, { "id": "custom.width", "value": 200 }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 100000 }, { "color": "red", "value": 1000000 } ] } } ] },
+        { "matcher": { "id": "byName", "options": "캐시재사용%" }, "properties": [ { "id": "unit", "value": "percent" }, { "id": "custom.cellOptions", "value": { "type": "color-text" } }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "yellow", "value": 50 }, { "color": "green", "value": 80 } ] } } ] },
+        { "matcher": { "id": "byName", "options": "멤버" }, "properties": [ { "id": "links", "value": [ { "title": "이 멤버 상세", "url": "/d/claude-by-person?var-member=${__data.fields.멤버}" } ] } ] }
+      ] },
+      "options": { "sortBy": [ { "displayName": "토큰/라인", "desc": true } ] }
+    },
+    {
+      "id": 2, "type": "bargauge", "title": "세션당 토큰 (멤버별, 7일) — 무거운 세션",
+      "gridPos": { "h": 9, "w": 8, "x": 0, "y": 13 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [ { "expr": "sum by (member) (increase(claude_code_token_usage_tokens_total[7d])) / sum by (member) (increase(claude_code_session_count_total[7d]))", "legendFormat": "{{member}}", "instant": true, "refId": "A" } ],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "continuous-YlOrRd" } }, "overrides": [] },
+      "options": { "orientation": "horizontal", "displayMode": "gradient", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 3, "type": "bargauge", "title": "활성시간당 토큰 (멤버별, 7일) — 소모 속도",
+      "gridPos": { "h": 9, "w": 8, "x": 8, "y": 13 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [ { "expr": "sum by (member) (increase(claude_code_token_usage_tokens_total[7d])) / (sum by (member) (increase(claude_code_active_time_seconds_total[7d]))/3600)", "legendFormat": "{{member}}", "instant": true, "refId": "A" } ],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0, "color": { "mode": "continuous-YlOrRd" } }, "overrides": [] },
+      "options": { "orientation": "horizontal", "displayMode": "gradient", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 4, "type": "bargauge", "title": "캐시 재사용률 (멤버별, 7일) — 높을수록 효율적",
+      "gridPos": { "h": 9, "w": 8, "x": 16, "y": 13 },
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "targets": [ { "expr": "100 * sum by (member) (increase(claude_code_token_usage_tokens_total{type=\"cacheRead\"}[7d])) / sum by (member) (increase(claude_code_token_usage_tokens_total[7d]))", "legendFormat": "{{member}}", "instant": true, "refId": "A" } ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "decimals": 0, "thresholds": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "yellow", "value": 50 }, { "color": "green", "value": 80 } ] }, "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "orientation": "horizontal", "displayMode": "gradient", "reduceOptions": { "calcs": ["lastNotNull"] } }
+    }
+  ]
+}

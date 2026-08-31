@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 7,
+  "version": 9,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -23,6 +23,12 @@
       "title": "💻 By Person",
       "type": "link",
       "url": "/d/claude-by-person",
+      "icon": "dashboard"
+    },
+    {
+      "title": "⚡ Efficiency",
+      "type": "link",
+      "url": "/d/claude-efficiency",
       "icon": "dashboard"
     }
   ],
@@ -444,7 +450,11 @@
           "options": {
             "excludeByName": {
               "Time": true,
-              "__name__": true
+              "__name__": true,
+              "window": true,
+              "scope": true,
+              "kind": true,
+              "group": true
             },
             "indexByName": {
               "경고": 0,
