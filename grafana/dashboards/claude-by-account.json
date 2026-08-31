@@ -35,7 +35,7 @@
       "datasource": { "type": "prometheus", "uid": "victoriametrics" },
       "targets": [
         {
-          "expr": "max by (account) (claude_limit_utilization{window=\"seven_day\", account=~\"$account\"})",
+          "expr": "max by (account) (last_over_time(claude_limit_utilization{window=\"seven_day\", account=~\"$account\"}[30m]))",
           "legendFormat": "{{account}}",
           "instant": true,
           "refId": "A"
@@ -69,7 +69,7 @@
       "datasource": { "type": "prometheus", "uid": "victoriametrics" },
       "targets": [
         {
-          "expr": "max by (account) (claude_limit_utilization{window=\"five_hour\", account=~\"$account\"})",
+          "expr": "max by (account) (last_over_time(claude_limit_utilization{window=\"five_hour\", account=~\"$account\"}[30m]))",
           "legendFormat": "{{account}}",
           "instant": true,
           "refId": "A"
@@ -103,7 +103,7 @@
       "datasource": { "type": "prometheus", "uid": "victoriametrics" },
       "targets": [
         {
-          "expr": "max by (account) (claude_limit_resets_at{window=\"seven_day\", account=~\"$account\"}) * 1000",
+          "expr": "max by (account) (last_over_time(claude_limit_resets_at{window=\"seven_day\", account=~\"$account\"}[30m])) * 1000",
           "legendFormat": "{{account}}",
           "instant": true,
           "refId": "A"
