@@ -39,7 +39,7 @@
         { "matcher": { "id": "byName", "options": "활성(분)" }, "properties": [ { "id": "decimals", "value": 1 } ] },
         { "matcher": { "id": "byName", "options": "토큰/라인" }, "properties": [ { "id": "custom.cellOptions", "value": { "type": "gauge", "mode": "gradient" } }, { "id": "custom.width", "value": 200 }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 100000 }, { "color": "red", "value": 1000000 } ] } } ] },
         { "matcher": { "id": "byName", "options": "캐시재사용%" }, "properties": [ { "id": "unit", "value": "percent" }, { "id": "custom.cellOptions", "value": { "type": "color-text" } }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "yellow", "value": 50 }, { "color": "green", "value": 80 } ] } } ] },
-        { "matcher": { "id": "byName", "options": "멤버" }, "properties": [ { "id": "links", "value": [ { "title": "이 멤버 상세", "url": "/d/claude-by-person?var-member=${__data.fields.멤버}" } ] } ] }
+        { "matcher": { "id": "byName", "options": "멤버" }, "properties": [ { "id": "links", "value": [ { "title": "이 멤버 상세", "url": "/d/claude-by-person?var-member=${__value.text}" } ] } ] }
       ] },
       "options": { "sortBy": [ { "displayName": "토큰/라인", "desc": true } ] }
     },
