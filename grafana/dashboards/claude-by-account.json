@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 3,
+  "version": 4,
   "refresh": "1m",
   "timezone": "browser",
   "time": {
@@ -263,7 +263,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (model) (increase(claude_code_token_usage_tokens_total{user_email=~\"$account\"}[$__range]))",
+          "expr": "sum by (model) (label_replace(increase(claude_code_token_usage_tokens_total{user_email=~\"$account\"}[$__range]), \"model\", \"$1\", \"model\", \".*(opus|sonnet|haiku|fable).*\"))",
           "legendFormat": "{{model}}",
           "instant": true,
           "refId": "A"
