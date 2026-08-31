@@ -103,14 +103,21 @@ powershell -ExecutionPolicy Bypass -File .\client\claude-otel-setup.ps1 -Central
 
 weekly/5h limit은 Anthropic 서버가 계정 단위로만 집계하므로 계정당 poller 1개면 된다.
 
-**권장 구조 — 중앙 서버에 Claude 계정별 리눅스 사용자를 만들어, 계정마다
-1년짜리 장수명 토큰(`claude setup-token`)을 발급해 두는 방식:**
+**동작 방식 — poller는 `claude -p /usage` 출력을 파싱한다.**
 
-> ⚠️ **토큰 엔드포인트(`console.anthropic.com/v1/oauth/token`)는 raw 요청에
-> 지속적으로 429**를 준다(IP 무관, 확인됨). 따라서 curl로 로그인/refresh는 불가하고,
-> 반드시 **CLI(`claude setup-token` / `claude auth login`)로만** 토큰을 얻을 수 있다.
-> `auth login` 토큰은 수 시간 뒤 만료되는데 refresh도 같은 엔드포인트라 막힌다.
-> → **`setup-token`으로 발급하는 1년짜리 토큰을 쓰면 refresh가 아예 필요 없다.**
+> raw `/api/oauth/usage` 엔드포인트는 rate limit(429)과 토큰 scope 문제로 쓸 수 없다.
+> 대신 **CLI의 `/usage` 명령**을 비대화형으로 실행해 그 텍스트를 파싱한다. CLI가
+> 자체 세션 토큰으로 인증하고, **호출할 때 토큰 갱신까지 자동으로** 해주므로
+> 별도의 토큰 파일·refresh 로직이 전혀 필요 없다. 전제는 그 리눅스 계정에
+> `claude auth login`이 돼 있는 것뿐이다.
+
+`claude -p /usage` 출력 예:
+```
+Current session: 10% used · resets Aug 31, 9:09am (UTC)
+Current week (all models): 13% used · resets Sep 2, 6:59pm (UTC)
+Current week (Fable): 2% used · resets Sep 2, 6:59pm (UTC)
+```
+→ 각각 `five_hour`, `seven_day`, `seven_day_fable` window로 저장된다.
 
 ```bash
 # 중앙 서버에서 1회:
@@ -120,30 +127,24 @@ sudo cp limit-poller/limit-poller.sh /opt/claude-usage/
 # Claude 계정마다:
 sudo useradd -m claude-acct-a
 sudo -iu claude-acct-a
-claude setup-token
-#   → 표시되는 URL을 브라우저에서 열어 "그 계정으로 로그인"된 상태로 승인
-#   → 화면의 코드(xxx#yyy)를 붙여넣으면 sk-ant-oat01-… 토큰이 출력됨 (1년 유효)
-# 출력된 토큰을 poller가 읽는 파일에 저장 (본인이 직접):
-umask 077; printf %s 'sk-ant-oat01-...' > ~/.claude/oauth-token
+claude   # 또는 claude auth login — /login 후 브라우저에서 그 계정으로 로그인
 crontab -e
 */15 * * * * VM_URL=http://localhost:8428 ACCOUNT_LABEL=계정이메일 /opt/claude-usage/limit-poller.sh >> $HOME/poller.log 2>&1
 ```
 
-- headless 서버라 브라우저가 안 열리면, URL을 다른 기기 브라우저에서 열어 승인하고
-  코드만 서버 터미널에 붙여넣으면 된다.
-- Claude 계정은 여러 기기 동시 로그인이 가능하므로, 서버에 토큰을 발급해도
-  기존 PC들의 세션은 영향받지 않는다.
+- headless 서버면 로그인 URL을 다른 기기 브라우저에서 열어 승인하고 코드만 붙여넣는다.
+- Claude 계정은 여러 기기 동시 로그인이 가능하므로 기존 PC 세션에 영향 없다.
 - `ACCOUNT_LABEL`을 계정 이메일로 지정하면 대시보드 라벨이 명확해진다(생략 시
-  `~/.claude.json` 이메일 → `unknown`).
-- 토큰 우선순위: `CLAUDE_CODE_OAUTH_TOKEN` 환경변수 > `~/.claude/oauth-token` 파일
-  > `~/.claude/.credentials.json`(auth login, 수시간 만료).
+  `claude auth status`의 이메일 → `unknown`).
+- **토큰 지속성**: `claude -p /usage`가 매 호출마다 CLI 토큰을 갱신하므로, 폴링이 도는
+  한 토큰은 계속 살아 있다. (단, 그 계정이 세션/주간 한도 100%로 완전히 막히면 호출이
+  실패할 수 있고, 그때는 health가 0으로 표시된다.)
 
 생성되는 메트릭:
 
-- `claude_limit_utilization{account, window}` — 사용률 % (window: `five_hour`, `seven_day`, `nimbus_quill` 등 응답에 utilization이 있는 전부)
+- `claude_limit_utilization{account, window}` — 사용률 % (window: `five_hour`, `seven_day`, `seven_day_fable` 등)
 - `claude_limit_resets_at{account, window}` — 초기화 시각 (unix epoch)
 - `claude_limit_up{account}` — **1=정상 / 0=오류** (아래 health 참고)
-- `claude_limit_http_code{account}` — usage 응답 코드 (200/401/429/000)
 - `claude_limit_last_run_timestamp{account}` — 마지막 실행 시각(epoch), staleness 감지용
 
 ### 계정 오류 가시화 (health)
@@ -152,25 +153,13 @@ poller는 **성공·실패 어느 경우든 health 메트릭을 항상 push**한
 문제를 Overview 대시보드에서 바로 볼 수 있다:
 
 - **🚦 계정 Poll 상태**: `claude_limit_up`이 0(빨강)이면 그 계정에 문제 있음
+  (미로그인, 또는 한도 100%로 `/usage` 호출 실패 등)
 - **마지막 수집 경과(초)**: 값이 크면 poller가 죽었거나 cron 미동작
-- **계정 오류 상세**: `http_code` — `401`=토큰 만료/무효(재발급 필요), `429`=rate limit,
-  `0`=요청 자체 실패(토큰 없음/네트워크)
 
-알림 추천: `claude_limit_up == 0` 또는 `claude_limit_http_code != 200` →
-Grafana Alerting으로 Slack/Discord 통지.
+`claude_limit_up == 0`이 되면 그 계정에서 `claude auth login`으로 재로그인하면 된다.
+(poller가 `/usage` 호출 시마다 토큰을 갱신하므로 평상시엔 재로그인이 필요 없다.)
 
-### 토큰 갱신 (1년 주기)
-
-setup-token 토큰은 1년 유효하고, **console.anthropic.com 토큰 엔드포인트가 raw 요청에
-429를 주므로 자동 refresh는 불가**하다. 즉 1년마다 수동 재발급이 필요하다:
-
-1. 만료가 다가오거나 만료되면 위 health 패널에서 `claude_limit_up=0` / `http_code=401`로
-   드러난다(그 계정만 빨갛게). Grafana 알림을 걸어두면 놓치지 않는다.
-2. 해당 계정에서 `claude setup-token`을 다시 실행 → 새 토큰을 `~/.claude/oauth-token`에 덮어쓴다.
-3. poller는 다음 실행부터 새 토큰을 사용한다(재시작·재설정 불필요).
-
-즉 "1년 후"는 계정당 위 3단계를 한 번 반복하는 것으로 끝난다. Anthropic이 향후
-공식 장수명 토큰 자동화나 토큰 엔드포인트 정책을 바꾸면 그때 refresh 자동화로 전환 가능.
+알림 추천: `claude_limit_up == 0` → Grafana Alerting으로 Slack/Discord 통지.
 
 ## 유용한 쿼리
 
@@ -190,15 +179,13 @@ claude_limit_utilization{window="seven_day"}
 
 ## 주의사항
 
-- **메트릭 이름 확인**: OTel→Prometheus 변환 규칙에 따라 이름 접미사가 다를 수 있다.
-  실제 이름은 `curl -s 'http://CENTRAL_HOST:8428/api/v1/label/__name__/values'` 로 확인하고
-  대시보드(`grafana/dashboards/claude-usage.json`)의 쿼리를 맞춰줄 것.
-- **`/api/oauth/usage`는 비공식 엔드포인트**다. Claude Code 업데이트로 스키마가 바뀔 수 있고,
-  `User-Agent: claude-code/<버전>` 헤더가 없으면 429가 난다. rate limit이 공격적이므로
-  계정당 poller 1개, 10분 이상 간격 유지.
-- **토큰 갱신**: poller가 만료 5분 전부터 refresh token으로 자동 갱신해
-  `~/.claude/.credentials.json`에 반영한다. 로그에 갱신 실패가 반복되면 그 계정에서
-  claude 재로그인이 필요하다. 갱신 endpoint/client id 역시 비공식이므로 바뀔 수 있다.
+- **메트릭 이름 확인**: OTel→Prometheus 변환에서 monotonic sum은 unit+`_total` 접미사가
+  붙는다 (예: `claude_code_token_usage` → `claude_code_token_usage_tokens_total`).
+  실제 이름은 `curl -s 'http://localhost:8428/api/v1/label/__name__/values'`(서버에서)로 확인.
+- **delta temporality**: Claude Code는 메트릭을 delta로 내보내므로 collector에
+  `delta_to_cumulative` processor가 반드시 있어야 저장된다(없으면 조용히 drop됨).
+- **limit은 `claude -p /usage` 파싱**: raw `/api/oauth/usage`는 429/scope로 불가.
+  Claude Code 업데이트로 `/usage` 출력 형식이 바뀌면 poller의 파싱을 맞춰줄 것.
 - **cardinality**: 세션 수가 아주 많아지면 `OTEL_METRICS_INCLUDE_SESSION_ID=false`로
   메트릭에서 session.id를 빼고, 세션 단위 분석은 VictoriaLogs의 이벤트로 대체.
 - 이미지 태그는 편의상 `latest`로 두었다. 운영 안정성이 필요하면 동작 확인 후 버전을 고정할 것.
