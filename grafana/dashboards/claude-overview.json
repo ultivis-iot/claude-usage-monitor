@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 6,
+  "version": 7,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -30,9 +30,9 @@
     {
       "id": 10,
       "type": "table",
-      "title": "🔑 계정 현황 — 남은 사용량 · 초기화 시각 · 연결된 사용자(전원) · PC",
+      "title": "🔑 계정 현황 — 사용량 · 초기화 시각 · 연결된 사용자(전원) · PC",
       "gridPos": {
-        "h": 15,
+        "h": 13,
         "w": 24,
         "x": 0,
         "y": 0
@@ -43,13 +43,13 @@
       },
       "targets": [
         {
-          "expr": "(100 - max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]))) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (100 - max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]))) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")",
+          "expr": "(max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]))) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]))) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")",
           "format": "table",
           "instant": true,
           "refId": "A"
         },
         {
-          "expr": "(100 - max by (account)(last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]))) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (100 - max by (account)(last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]))) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")",
+          "expr": "(max by (account)(last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]))) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]))) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")",
           "format": "table",
           "instant": true,
           "refId": "B"
@@ -88,8 +88,8 @@
             },
             "renameByName": {
               "account": "계정",
-              "Value #A": "Weekly 남은%",
-              "Value #B": "세션(5h) 남은%",
+              "Value #A": "Weekly 사용%",
+              "Value #B": "세션(5h) 사용%",
               "Value #C": "Weekly 초기화",
               "Value #E": "세션 초기화",
               "member": "사용자",
@@ -107,11 +107,11 @@
                 "aggregations": [],
                 "operation": "groupby"
               },
-              "Weekly 남은%": {
+              "Weekly 사용%": {
                 "aggregations": [],
                 "operation": "groupby"
               },
-              "세션(5h) 남은%": {
+              "세션(5h) 사용%": {
                 "aggregations": [],
                 "operation": "groupby"
               },
@@ -135,7 +135,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Weekly 남은%"
+              "options": "Weekly 사용%"
             },
             "properties": [
               {
@@ -167,20 +167,20 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "color": "red",
+                      "color": "green",
                       "value": null
                     },
                     {
-                      "color": "orange",
-                      "value": 10
-                    },
-                    {
                       "color": "yellow",
-                      "value": 25
+                      "value": 70
                     },
                     {
-                      "color": "green",
-                      "value": 40
+                      "color": "orange",
+                      "value": 85
+                    },
+                    {
+                      "color": "red",
+                      "value": 95
                     }
                   ]
                 }
@@ -190,7 +190,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "세션(5h) 남은%"
+              "options": "세션(5h) 사용%"
             },
             "properties": [
               {
@@ -222,20 +222,20 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "color": "red",
+                      "color": "green",
                       "value": null
                     },
                     {
-                      "color": "orange",
-                      "value": 10
-                    },
-                    {
                       "color": "yellow",
-                      "value": 25
+                      "value": 70
                     },
                     {
-                      "color": "green",
-                      "value": 40
+                      "color": "orange",
+                      "value": 85
+                    },
+                    {
+                      "color": "red",
+                      "value": 95
                     }
                   ]
                 }
@@ -317,7 +317,7 @@
       "options": {
         "sortBy": [
           {
-            "displayName": "Weekly 남은%",
+            "displayName": "Weekly 사용%",
             "desc": false
           }
         ]
@@ -328,10 +328,10 @@
       "type": "table",
       "title": "🏆 24시간 소비 랭킹 (멤버 × PC × 계정)",
       "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 15
+        "h": 8,
+        "w": 14,
+        "x": 10,
+        "y": 13
       },
       "datasource": {
         "type": "prometheus",
@@ -415,6 +415,86 @@
           }
         ]
       }
+    },
+    {
+      "id": 30,
+      "type": "table",
+      "title": "⚠️ 경고 / 알림 (문제 있는 계정만 표시 · 없으면 정상)",
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 0,
+        "y": 13
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "victoriametrics"
+      },
+      "targets": [
+        {
+          "expr": "label_replace(last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]) >= 90, \"경고\", \"🔴 주간 한도 90%↑\", \"account\", \"(.+)\") or label_replace(last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]) >= 90, \"경고\", \"🟠 세션 한도 90%↑\", \"account\", \"(.+)\") or label_replace(last_over_time(claude_limit_up[45m]) == 0, \"경고\", \"⚫ 수집오류(미로그인)\", \"account\", \"(.+)\")",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true
+            },
+            "indexByName": {
+              "경고": 0,
+              "account": 1,
+              "Value": 2
+            },
+            "renameByName": {
+              "account": "계정",
+              "Value": "값"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "값"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "계정"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "이 계정 상세",
+                    "url": "/d/claude-by-account?var-account=${__data.fields.계정}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {}
     }
   ]
 }
