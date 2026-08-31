@@ -250,7 +250,7 @@
     {
       "id": 5,
       "type": "bargauge",
-      "title": "모델별 토큰 (최근 7일)",
+      "title": "모델별 토큰 (조회 기간)",
       "gridPos": {
         "h": 9,
         "w": 12,
@@ -263,7 +263,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (model) (increase(claude_code_token_usage_tokens_total{user_email=~\"$account\"}[7d]))",
+          "expr": "sum by (model) (increase(claude_code_token_usage_tokens_total{user_email=~\"$account\"}[$__range]))",
           "legendFormat": "{{model}}",
           "instant": true,
           "refId": "A"
@@ -291,7 +291,7 @@
     {
       "id": 7,
       "type": "table",
-      "title": "세션별 토큰 (최근 24시간)",
+      "title": "세션별 토큰 (조회 기간)",
       "gridPos": {
         "h": 9,
         "w": 24,
@@ -304,7 +304,7 @@
       },
       "targets": [
         {
-          "expr": "sort_desc(sum by (session_id, member, host_name) (increase(claude_code_token_usage_tokens_total{user_email=~\"$account\"}[24h])))",
+          "expr": "sort_desc(sum by (session_id, member, host_name) (increase(claude_code_token_usage_tokens_total{user_email=~\"$account\"}[$__range])))",
           "format": "table",
           "instant": true,
           "refId": "A"

@@ -74,7 +74,7 @@
     {
       "id": 1,
       "type": "stat",
-      "title": "최근 7일 토큰",
+      "title": "토큰 (조회 기간)",
       "gridPos": {
         "h": 6,
         "w": 12,
@@ -87,7 +87,7 @@
       },
       "targets": [
         {
-          "expr": "sum(increase(claude_code_token_usage_tokens_total{member=~\"$member\", host_name=~\"$host\"}[7d]))",
+          "expr": "sum(increase(claude_code_token_usage_tokens_total{member=~\"$member\", host_name=~\"$host\"}[$__range]))",
           "instant": true,
           "refId": "A"
         }
@@ -112,7 +112,7 @@
     {
       "id": 3,
       "type": "bargauge",
-      "title": "모델별 토큰 (최근 7일)",
+      "title": "모델별 토큰 (조회 기간)",
       "gridPos": {
         "h": 6,
         "w": 12,
@@ -125,7 +125,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (model) (increase(claude_code_token_usage_tokens_total{member=~\"$member\", host_name=~\"$host\"}[7d]))",
+          "expr": "sum by (model) (increase(claude_code_token_usage_tokens_total{member=~\"$member\", host_name=~\"$host\"}[$__range]))",
           "legendFormat": "{{model}}",
           "instant": true,
           "refId": "A"
@@ -233,7 +233,7 @@
     {
       "id": 6,
       "type": "table",
-      "title": "세션별 토큰 (최근 24시간)",
+      "title": "세션별 토큰 (조회 기간)",
       "gridPos": {
         "h": 9,
         "w": 24,
@@ -246,7 +246,7 @@
       },
       "targets": [
         {
-          "expr": "sort_desc(sum by (session_id, host_name, user_email) (increase(claude_code_token_usage_tokens_total{member=~\"$member\", host_name=~\"$host\"}[24h])))",
+          "expr": "sort_desc(sum by (session_id, host_name, user_email) (increase(claude_code_token_usage_tokens_total{member=~\"$member\", host_name=~\"$host\"}[$__range])))",
           "format": "table",
           "instant": true,
           "refId": "A"

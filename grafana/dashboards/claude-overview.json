@@ -49,31 +49,31 @@
       },
       "targets": [
         {
-          "expr": "(max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]))) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]))) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")",
+          "expr": "(max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]))) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[$__range])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]))) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[$__range])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")",
           "format": "table",
           "instant": true,
           "refId": "A"
         },
         {
-          "expr": "(max by (account)(last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]))) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]))) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")",
+          "expr": "(max by (account)(last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]))) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[$__range])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]))) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[$__range])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")",
           "format": "table",
           "instant": true,
           "refId": "B"
         },
         {
-          "expr": "(max by (account)(last_over_time(claude_limit_resets_at{window=\"seven_day\"}[45m])) * 1000) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_resets_at{window=\"seven_day\"}[45m])) * 1000) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")",
+          "expr": "(max by (account)(last_over_time(claude_limit_resets_at{window=\"seven_day\"}[45m])) * 1000) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[$__range])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_resets_at{window=\"seven_day\"}[45m])) * 1000) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[$__range])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")",
           "format": "table",
           "instant": true,
           "refId": "C"
         },
         {
-          "expr": "label_replace(sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[24h])), \"account\", \"$1\", \"user_email\", \"(.+)\")",
+          "expr": "label_replace(sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[$__range])), \"account\", \"$1\", \"user_email\", \"(.+)\")",
           "format": "table",
           "instant": true,
           "refId": "D"
         },
         {
-          "expr": "(max by (account)(last_over_time(claude_limit_resets_at{window=\"five_hour\"}[45m])) * 1000) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_resets_at{window=\"five_hour\"}[45m])) * 1000) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")",
+          "expr": "(max by (account)(last_over_time(claude_limit_resets_at{window=\"five_hour\"}[45m])) * 1000) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[$__range])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_resets_at{window=\"five_hour\"}[45m])) * 1000) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[$__range])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")",
           "format": "table",
           "instant": true,
           "refId": "E"
@@ -100,7 +100,7 @@
               "Value #E": "세션 초기화",
               "member": "사용자",
               "host_name": "PC",
-              "Value #D": "토큰(24h)"
+              "Value #D": "토큰(기간)"
             }
           }
         },
@@ -275,7 +275,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "토큰(24h)"
+              "options": "토큰(기간)"
             },
             "properties": [
               {
