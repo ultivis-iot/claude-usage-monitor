@@ -45,28 +45,31 @@
         { "expr": "(100 - max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]))) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (100 - max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day\"}[45m]))) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")", "format": "table", "instant": true, "refId": "A" },
         { "expr": "(100 - max by (account)(last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]))) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (100 - max by (account)(last_over_time(claude_limit_utilization{window=\"five_hour\"}[45m]))) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")", "format": "table", "instant": true, "refId": "B" },
         { "expr": "(max by (account)(last_over_time(claude_limit_resets_at{window=\"seven_day\"}[45m])) * 1000) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_resets_at{window=\"seven_day\"}[45m])) * 1000) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")", "format": "table", "instant": true, "refId": "C" },
-        { "expr": "label_replace(sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[24h])), \"account\", \"$1\", \"user_email\", \"(.+)\")", "format": "table", "instant": true, "refId": "D" }
+        { "expr": "label_replace(sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[24h])), \"account\", \"$1\", \"user_email\", \"(.+)\")", "format": "table", "instant": true, "refId": "D" },
+        { "expr": "(max by (account)(last_over_time(claude_limit_resets_at{window=\"five_hour\"}[45m])) * 1000) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_resets_at{window=\"five_hour\"}[45m])) * 1000) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[7d])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")", "format": "table", "instant": true, "refId": "E" }
       ],
       "transformations": [
         { "id": "merge", "options": {} },
         { "id": "organize", "options": {
           "excludeByName": { "Time": true, "user_email": true, "__name__": true },
-          "renameByName": { "account": "계정", "Value #A": "Weekly 남은%", "Value #B": "5h 남은%", "Value #C": "초기화(Weekly)", "member": "사용자", "host_name": "PC", "Value #D": "토큰(24h)" }
+          "renameByName": { "account": "계정", "Value #A": "Weekly 남은%", "Value #B": "세션(5h) 남은%", "Value #C": "Weekly 초기화", "Value #E": "세션 초기화", "member": "사용자", "host_name": "PC", "Value #D": "토큰(24h)" }
         } },
         { "id": "groupToNestedTable", "options": {
           "showSubframeHeaders": true,
           "fields": {
             "계정": { "aggregations": [], "operation": "groupby" },
             "Weekly 남은%": { "aggregations": [], "operation": "groupby" },
-            "5h 남은%": { "aggregations": [], "operation": "groupby" },
-            "초기화(Weekly)": { "aggregations": [], "operation": "groupby" }
+            "세션(5h) 남은%": { "aggregations": [], "operation": "groupby" },
+            "Weekly 초기화": { "aggregations": [], "operation": "groupby" },
+            "세션 초기화": { "aggregations": [], "operation": "groupby" }
           }
         } }
       ],
       "fieldConfig": { "defaults": { "decimals": 0 }, "overrides": [
         { "matcher": { "id": "byName", "options": "Weekly 남은%" }, "properties": [ { "id": "unit", "value": "percent" }, { "id": "min", "value": 0 }, { "id": "max", "value": 100 }, { "id": "custom.cellOptions", "value": { "type": "gauge", "mode": "gradient" } }, { "id": "custom.width", "value": 180 }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "orange", "value": 10 }, { "color": "yellow", "value": 25 }, { "color": "green", "value": 40 } ] } } ] },
-        { "matcher": { "id": "byName", "options": "5h 남은%" }, "properties": [ { "id": "unit", "value": "percent" }, { "id": "custom.cellOptions", "value": { "type": "color-text" } }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "yellow", "value": 20 }, { "color": "green", "value": 40 } ] } } ] },
-        { "matcher": { "id": "byName", "options": "초기화(Weekly)" }, "properties": [ { "id": "unit", "value": "dateTimeAsIso" } ] },
+        { "matcher": { "id": "byName", "options": "세션(5h) 남은%" }, "properties": [ { "id": "unit", "value": "percent" }, { "id": "min", "value": 0 }, { "id": "max", "value": 100 }, { "id": "custom.cellOptions", "value": { "type": "gauge", "mode": "gradient" } }, { "id": "custom.width", "value": 160 }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "orange", "value": 10 }, { "color": "yellow", "value": 25 }, { "color": "green", "value": 40 } ] } } ] },
+        { "matcher": { "id": "byName", "options": "Weekly 초기화" }, "properties": [ { "id": "unit", "value": "dateTimeAsIso" } ] },
+        { "matcher": { "id": "byName", "options": "세션 초기화" }, "properties": [ { "id": "unit", "value": "dateTimeAsIso" } ] },
         { "matcher": { "id": "byName", "options": "토큰(24h)" }, "properties": [ { "id": "unit", "value": "short" } ] },
         { "matcher": { "id": "byName", "options": "계정" }, "properties": [ { "id": "links", "value": [ { "title": "이 계정 상세", "url": "/d/claude-by-account?var-account=${__data.fields.계정}" } ] } ] },
         { "matcher": { "id": "byName", "options": "사용자" }, "properties": [ { "id": "links", "value": [ { "title": "이 멤버 상세", "url": "/d/claude-by-person?var-member=${__data.fields.사용자}" } ] } ] }

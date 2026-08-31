@@ -58,8 +58,9 @@ while IFS= read -r line; do
   [ -n "$pct" ] || continue
   METRICS+="claude_limit_utilization{account=\"$ACCOUNT\",window=\"$win\"} $pct"$'\n'
   # resets 날짜가 있으면 epoch로 변환해 함께 기록
+  # 형식 예: "Aug 31, 2:19pm (UTC)" — GNU date는 쉼표가 있으면 파싱 못하므로 제거
   case "$line" in *resets*)
-    datestr=$(printf '%s' "$line" | sed -E 's/.*resets (.*) \(UTC\).*/\1/')
+    datestr=$(printf '%s' "$line" | sed -E 's/.*resets (.*) \(UTC\).*/\1/' | tr -d ',')
     epoch=$(date -u -d "$datestr UTC" +%s 2>/dev/null || true)
     [ -n "$epoch" ] && METRICS+="claude_limit_resets_at{account=\"$ACCOUNT\",window=\"$win\"} $epoch"$'\n'
   ;; esac
