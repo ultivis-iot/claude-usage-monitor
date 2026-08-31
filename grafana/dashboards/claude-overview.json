@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 12,
+  "version": 13,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -334,10 +334,10 @@
       "type": "table",
       "title": "🏆 소비 랭킹 (멤버별 · 조회 기간 기준)",
       "gridPos": {
-        "h": 8,
+        "h": 7,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 7
       },
       "datasource": {
         "type": "prometheus",
@@ -426,7 +426,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 7
+        "y": 14
       },
       "datasource": {
         "type": "prometheus",
@@ -505,12 +505,12 @@
     {
       "id": 40,
       "type": "bargauge",
-      "title": "세션당 토큰 (7일) — 무거운 세션",
+      "title": "세션당 토큰 (조회기간) — 무거운 세션",
       "gridPos": {
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 7
+        "y": 14
       },
       "datasource": {
         "type": "prometheus",
@@ -518,7 +518,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (member)(increase(claude_code_token_usage_tokens_total[7d])) / sum by (member)(increase(claude_code_session_count_total[7d]))",
+          "expr": "sum by (member)(increase(claude_code_token_usage_tokens_total[$__range])) / sum by (member)(increase(claude_code_session_count_total[$__range]))",
           "legendFormat": "{{member}}",
           "instant": true,
           "refId": "A"
@@ -547,12 +547,12 @@
     {
       "id": 41,
       "type": "bargauge",
-      "title": "캐시 재사용률 (7일) — 높을수록 효율",
+      "title": "작업 대비 토큰 (토큰/코드라인 · 높을수록 비효율)",
       "gridPos": {
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 7
+        "y": 14
       },
       "datasource": {
         "type": "prometheus",
@@ -560,7 +560,7 @@
       },
       "targets": [
         {
-          "expr": "100 * sum by (member)(increase(claude_code_token_usage_tokens_total{type=\"cacheRead\"}[7d])) / sum by (member)(increase(claude_code_token_usage_tokens_total[7d]))",
+          "expr": "sum by (member)(increase(claude_code_token_usage_tokens_total[$__range])) / (sum by (member)(increase(claude_code_lines_of_code_count_total[$__range])) > 0)",
           "legendFormat": "{{member}}",
           "instant": true,
           "refId": "A"
@@ -568,29 +568,10 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
+          "unit": "short",
           "decimals": 0,
           "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 50
-              },
-              {
-                "color": "green",
-                "value": 80
-              }
-            ]
+            "mode": "continuous-YlOrRd"
           }
         },
         "overrides": []
