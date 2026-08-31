@@ -68,8 +68,8 @@
       "fieldConfig": { "defaults": { "decimals": 0 }, "overrides": [
         { "matcher": { "id": "byName", "options": "Weekly 남은%" }, "properties": [ { "id": "unit", "value": "percent" }, { "id": "min", "value": 0 }, { "id": "max", "value": 100 }, { "id": "custom.cellOptions", "value": { "type": "gauge", "mode": "gradient" } }, { "id": "custom.width", "value": 180 }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "orange", "value": 10 }, { "color": "yellow", "value": 25 }, { "color": "green", "value": 40 } ] } } ] },
         { "matcher": { "id": "byName", "options": "세션(5h) 남은%" }, "properties": [ { "id": "unit", "value": "percent" }, { "id": "min", "value": 0 }, { "id": "max", "value": 100 }, { "id": "custom.cellOptions", "value": { "type": "gauge", "mode": "gradient" } }, { "id": "custom.width", "value": 160 }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [ { "color": "red", "value": null }, { "color": "orange", "value": 10 }, { "color": "yellow", "value": 25 }, { "color": "green", "value": 40 } ] } } ] },
-        { "matcher": { "id": "byName", "options": "Weekly 초기화" }, "properties": [ { "id": "unit", "value": "dateTimeAsIso" } ] },
-        { "matcher": { "id": "byName", "options": "세션 초기화" }, "properties": [ { "id": "unit", "value": "dateTimeAsIso" } ] },
+        { "matcher": { "id": "byName", "options": "Weekly 초기화" }, "properties": [ { "id": "unit", "value": "time:M/D(ddd) HH:mm" } ] },
+        { "matcher": { "id": "byName", "options": "세션 초기화" }, "properties": [ { "id": "unit", "value": "time:M/D(ddd) HH:mm" } ] },
         { "matcher": { "id": "byName", "options": "토큰(24h)" }, "properties": [ { "id": "unit", "value": "short" } ] },
         { "matcher": { "id": "byName", "options": "계정" }, "properties": [ { "id": "links", "value": [ { "title": "이 계정 상세", "url": "/d/claude-by-account?var-account=${__data.fields.계정}" } ] } ] },
         { "matcher": { "id": "byName", "options": "사용자" }, "properties": [ { "id": "links", "value": [ { "title": "이 멤버 상세", "url": "/d/claude-by-person?var-member=${__data.fields.사용자}" } ] } ] }
