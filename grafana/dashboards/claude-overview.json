@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 13,
+  "version": 14,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -77,6 +77,12 @@
           "format": "table",
           "instant": true,
           "refId": "E"
+        },
+        {
+          "expr": "(max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day_fable\"}[45m]))) * on(account) group_right() label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[$__range])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") or (max by (account)(last_over_time(claude_limit_utilization{window=\"seven_day_fable\"}[45m]))) unless on(account) label_replace((sum by (user_email,member,host_name)(increase(claude_code_token_usage_tokens_total[$__range])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\")",
+          "format": "table",
+          "instant": true,
+          "refId": "F"
         }
       ],
       "transformations": [
@@ -100,7 +106,8 @@
               "Value #E": "세션 초기화",
               "member": "사용자",
               "host_name": "PC",
-              "Value #D": "토큰(기간)"
+              "Value #D": "토큰(기간)",
+              "Value #F": "Fable 주간%"
             }
           }
         },
@@ -126,6 +133,10 @@
                 "operation": "groupby"
               },
               "세션 초기화": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "Fable 주간%": {
                 "aggregations": [],
                 "operation": "groupby"
               }
@@ -315,6 +326,61 @@
                     "url": "/d/claude-by-person?var-member=${__data.fields.사용자}"
                   }
                 ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Fable 주간%"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 150
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 70
+                    },
+                    {
+                      "color": "orange",
+                      "value": 85
+                    },
+                    {
+                      "color": "red",
+                      "value": 95
+                    }
+                  ]
+                }
               }
             ]
           }
