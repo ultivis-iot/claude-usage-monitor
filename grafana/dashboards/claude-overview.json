@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 11,
+  "version": 12,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -38,7 +38,7 @@
       "type": "table",
       "title": "🔑 계정 현황 — 사용량 · 초기화 시각 · 연결된 사용자(전원) · PC",
       "gridPos": {
-        "h": 11,
+        "h": 7,
         "w": 24,
         "x": 0,
         "y": 0
@@ -337,7 +337,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 15
       },
       "datasource": {
         "type": "prometheus",
@@ -426,7 +426,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 11
+        "y": 7
       },
       "datasource": {
         "type": "prometheus",
@@ -510,7 +510,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 11
+        "y": 7
       },
       "datasource": {
         "type": "prometheus",
@@ -552,7 +552,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 11
+        "y": 7
       },
       "datasource": {
         "type": "prometheus",
