@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 29,
+  "version": 30,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -34,11 +34,11 @@
   ],
   "panels": [
     {
-      "id": 10,
+      "id": 20,
       "type": "table",
-      "title": "🔑 계정 현황 (계정별 한도·초기화)",
+      "title": "🚦 계정 한도 (계정별)",
       "gridPos": {
-        "h": 8,
+        "h": 7,
         "w": 24,
         "x": 0,
         "y": 0
@@ -73,12 +73,6 @@
           "refId": "C"
         },
         {
-          "expr": "max by (account)(last_over_time(claude_limit_resets_at{window=\"five_hour\"}[45m])) * 1000",
-          "format": "table",
-          "instant": true,
-          "refId": "E"
-        },
-        {
           "expr": "last_over_time(claude_limit_up[45m])",
           "format": "table",
           "instant": true,
@@ -103,8 +97,7 @@
               "Value #F": 2,
               "Value #B": 3,
               "Value #C": 4,
-              "Value #E": 5,
-              "Value #G": 6
+              "Value #G": 5
             },
             "renameByName": {
               "account": "계정",
@@ -112,7 +105,6 @@
               "Value #F": "Fable 주간%",
               "Value #B": "세션(5h) 사용%",
               "Value #C": "Weekly 초기화",
-              "Value #E": "세션 초기화",
               "Value #G": "상태"
             }
           }
@@ -291,18 +283,6 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "세션 초기화"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "time:M/D(ddd) HH:mm"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
               "options": "상태"
             },
             "properties": [
@@ -361,14 +341,124 @@
       }
     },
     {
-      "id": 50,
+      "id": 10,
       "type": "table",
-      "title": "👥 사용자 현황 (사용자·계정 ▸ 펼치면 PC·토큰)",
+      "title": "🔑 계정 현황 (계정 ▸ 어떤 사용자가 많이 썼나)",
       "gridPos": {
-        "h": 10,
+        "h": 9,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 7
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "victoriametrics"
+      },
+      "targets": [
+        {
+          "expr": "label_replace(sort_desc(sum by (user_email, member, host_name)(increase(claude_code_token_usage_tokens_total[$__range]))), \"account\", \"$1\", \"user_email\", \"(.+)\")",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true
+            },
+            "renameByName": {
+              "account": "계정",
+              "member": "사용자",
+              "host_name": "PC",
+              "Value": "토큰"
+            }
+          }
+        },
+        {
+          "id": "groupToNestedTable",
+          "options": {
+            "showSubframeHeaders": true,
+            "fields": {
+              "계정": {
+                "aggregations": [],
+                "operation": "groupby"
+              }
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "토큰"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "계정"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "이 계정 상세",
+                    "url": "/d/claude-by-account?var-account=${__value.text}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "사용자"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "이 멤버 상세",
+                    "url": "/d/claude-by-person?var-member=${__value.text}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {}
+    },
+    {
+      "id": 50,
+      "type": "table",
+      "title": "👥 사용자 현황 (사용자·계정 ▸ PC·토큰)",
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 16
       },
       "datasource": {
         "type": "prometheus",
@@ -424,6 +514,21 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "토큰"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "사용자"
             },
             "properties": [
@@ -467,7 +572,7 @@
         "h": 5,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 25
       },
       "datasource": {
         "type": "prometheus",
