@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 25,
+  "version": 27,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
