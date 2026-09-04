@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 49,
+  "version": 50,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -216,6 +216,12 @@
           "format": "table",
           "instant": true,
           "refId": "L"
+        },
+        {
+          "expr": "label_replace(time() - max by (user_email,member,host_name)(timestamp(claude_code_token_usage_tokens_total)), \"account\", \"$1\", \"user_email\", \"(.+)\")",
+          "format": "table",
+          "instant": true,
+          "refId": "M"
         }
       ],
       "transformations": [
@@ -244,22 +250,24 @@
               "Value #H": "토큰",
               "Value #I": "소진 예상",
               "Value #K": "Weekly 남음",
-              "Value #L": "세션 남음"
+              "Value #L": "세션 남음",
+              "Value #M": "활동"
             },
             "indexByName": {
               "account": 0,
-              "Value #A": 1,
-              "Value #I": 2,
-              "Value #C": 3,
-              "Value #K": 4,
-              "Value #B": 5,
-              "Value #E": 6,
-              "Value #L": 7,
-              "Value #F": 8,
-              "member": 9,
-              "host_name": 10,
-              "Value #G": 11,
-              "Value #H": 12
+              "Value #M": 1,
+              "Value #A": 2,
+              "Value #I": 3,
+              "Value #C": 4,
+              "Value #K": 5,
+              "Value #B": 6,
+              "Value #E": 7,
+              "Value #L": 8,
+              "Value #F": 9,
+              "member": 10,
+              "host_name": 11,
+              "Value #G": 12,
+              "Value #H": 13
             }
           }
         },
@@ -341,6 +349,12 @@
               "Fable 주간%": {
                 "aggregations": [
                   "max"
+                ],
+                "operation": "aggregate"
+              },
+              "활동": {
+                "aggregations": [
+                  "min"
                 ],
                 "operation": "aggregate"
               }
@@ -666,6 +680,68 @@
                 ]
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "활동 (min)"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "활동"
+              },
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": -1000000000000,
+                      "to": 600,
+                      "result": {
+                        "text": "●",
+                        "color": "green",
+                        "index": 0
+                      }
+                    }
+                  },
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": 600,
+                      "to": 1000000000000,
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 1
+                      }
+                    }
+                  },
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "nan",
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 2
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -744,7 +820,7 @@
               "Value #B": "토큰",
               "Value #C": "세션 총합",
               "Value #D": "토큰 총합",
-              "Value #E": "마지막 활동"
+              "Value #E": "활동"
             },
             "indexByName": {
               "member": 0,
@@ -803,7 +879,7 @@
                 ],
                 "operation": "aggregate"
               },
-              "마지막 활동": {
+              "활동": {
                 "aggregations": [
                   "min"
                 ],
@@ -887,16 +963,16 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "마지막 활동 (min)"
+              "options": "활동 (min)"
             },
             "properties": [
               {
                 "id": "displayName",
-                "value": "마지막 활동"
+                "value": "활동"
               },
               {
                 "id": "unit",
-                "value": "s"
+                "value": "none"
               },
               {
                 "id": "custom.cellOptions",
@@ -905,20 +981,44 @@
                 }
               },
               {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": null
-                    },
-                    {
-                      "color": "text",
-                      "value": 600
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": -1000000000000,
+                      "to": 600,
+                      "result": {
+                        "text": "●",
+                        "color": "green",
+                        "index": 0
+                      }
                     }
-                  ]
-                }
+                  },
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": 600,
+                      "to": 1000000000000,
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 1
+                      }
+                    }
+                  },
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "nan",
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 2
+                      }
+                    }
+                  }
+                ]
               }
             ]
           }
