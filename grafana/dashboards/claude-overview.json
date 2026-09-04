@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 64,
+  "version": 65,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -601,12 +601,6 @@
                 "value": "none"
               },
               {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-text"
-                }
-              },
-              {
                 "id": "mappings",
                 "value": [
                   {
@@ -615,8 +609,7 @@
                       "from": -1000000000000,
                       "to": 600,
                       "result": {
-                        "text": "●",
-                        "color": "green",
+                        "text": "🟢",
                         "index": 0
                       }
                     }
@@ -627,8 +620,7 @@
                       "from": 600,
                       "to": 1000000000000,
                       "result": {
-                        "text": "●",
-                        "color": "red",
+                        "text": "🔴",
                         "index": 1
                       }
                     }
@@ -638,8 +630,7 @@
                     "options": {
                       "match": "nan",
                       "result": {
-                        "text": "●",
-                        "color": "red",
+                        "text": "🔴",
                         "index": 2
                       }
                     }
@@ -898,12 +889,6 @@
                 "value": "none"
               },
               {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-text"
-                }
-              },
-              {
                 "id": "mappings",
                 "value": [
                   {
@@ -912,8 +897,7 @@
                       "from": -1000000000000,
                       "to": 600,
                       "result": {
-                        "text": "●",
-                        "color": "green",
+                        "text": "🟢",
                         "index": 0
                       }
                     }
@@ -924,8 +908,7 @@
                       "from": 600,
                       "to": 1000000000000,
                       "result": {
-                        "text": "●",
-                        "color": "red",
+                        "text": "🔴",
                         "index": 1
                       }
                     }
@@ -935,8 +918,7 @@
                     "options": {
                       "match": "nan",
                       "result": {
-                        "text": "●",
-                        "color": "red",
+                        "text": "🔴",
                         "index": 2
                       }
                     }
