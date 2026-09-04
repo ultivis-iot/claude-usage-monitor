@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 68,
+  "version": 69,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -313,10 +313,6 @@
                     }
                   ]
                 }
-              },
-              {
-                "id": "custom.width",
-                "value": 105
               }
             ]
           },
@@ -359,10 +355,6 @@
                     }
                   }
                 ]
-              },
-              {
-                "id": "custom.width",
-                "value": 115
               }
             ]
           },
@@ -379,10 +371,6 @@
               {
                 "id": "unit",
                 "value": "time:M/D(ddd) HH:mm"
-              },
-              {
-                "id": "custom.width",
-                "value": 115
               }
             ]
           },
@@ -403,10 +391,6 @@
               {
                 "id": "decimals",
                 "value": 1
-              },
-              {
-                "id": "custom.width",
-                "value": 85
               }
             ]
           },
@@ -427,10 +411,6 @@
               {
                 "id": "decimals",
                 "value": 1
-              },
-              {
-                "id": "custom.width",
-                "value": 85
               }
             ]
           },
@@ -486,10 +466,6 @@
                     }
                   ]
                 }
-              },
-              {
-                "id": "custom.width",
-                "value": 105
               }
             ]
           },
@@ -506,10 +482,6 @@
               {
                 "id": "unit",
                 "value": "time:M/D(ddd) HH:mm"
-              },
-              {
-                "id": "custom.width",
-                "value": 115
               }
             ]
           },
@@ -565,10 +537,6 @@
                     }
                   ]
                 }
-              },
-              {
-                "id": "custom.width",
-                "value": 95
               }
             ]
           },
@@ -586,10 +554,6 @@
                     "url": "/d/claude-by-account?var-account=${__value.text}"
                   }
                 ]
-              },
-              {
-                "id": "custom.width",
-                "value": 210
               }
             ]
           },
@@ -607,10 +571,6 @@
                     "url": "/d/claude-by-person?var-member=${__value.text}"
                   }
                 ]
-              },
-              {
-                "id": "custom.width",
-                "value": 120
               }
             ]
           },
@@ -622,7 +582,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 45
+                "value": 55
               }
             ]
           },
@@ -679,43 +639,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 45
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PC"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 140
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "세션"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 70
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "토큰"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 100
+                "value": 55
               }
             ]
           }
@@ -882,10 +806,6 @@
               {
                 "id": "displayName",
                 "value": "세션 총합"
-              },
-              {
-                "id": "custom.width",
-                "value": 90
               }
             ]
           },
@@ -905,10 +825,6 @@
                   "type": "gauge",
                   "mode": "gradient"
                 }
-              },
-              {
-                "id": "custom.width",
-                "value": 140
               }
             ]
           },
@@ -926,10 +842,6 @@
                     "url": "/d/claude-by-person?var-member=${__value.text}"
                   }
                 ]
-              },
-              {
-                "id": "custom.width",
-                "value": 120
               }
             ]
           },
@@ -947,10 +859,6 @@
                     "url": "/d/claude-by-account?var-account=${__value.text}"
                   }
                 ]
-              },
-              {
-                "id": "custom.width",
-                "value": 210
               }
             ]
           },
@@ -962,7 +870,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 45
+                "value": 55
               }
             ]
           },
@@ -1019,43 +927,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 45
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PC"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 140
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "세션"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 70
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "토큰"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 100
+                "value": 55
               }
             ]
           }
