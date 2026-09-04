@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 50,
+  "version": 51,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -34,115 +34,6 @@
   ],
   "panels": [
     {
-      "id": 60,
-      "type": "table",
-      "title": "🟢 지금 활동중 (최근 10분 내 사용 ▸ 계정/사용자 클릭해 상세로)",
-      "gridPos": {
-        "h": 6,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "datasource": {
-        "type": "prometheus",
-        "uid": "victoriametrics"
-      },
-      "targets": [
-        {
-          "expr": "label_replace((time() - max by (user_email,member,host_name)(timestamp(claude_code_token_usage_tokens_total))) < 600, \"account\", \"$1\", \"user_email\", \"(.+)\")",
-          "format": "table",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "user_email": true,
-              "__name__": true
-            },
-            "renameByName": {
-              "member": "사용자",
-              "account": "계정",
-              "host_name": "PC",
-              "Value": "마지막 활동"
-            },
-            "indexByName": {
-              "member": 0,
-              "account": 1,
-              "host_name": 2,
-              "Value": 3
-            }
-          }
-        },
-        {
-          "id": "sortBy",
-          "options": {
-            "fields": {},
-            "sort": [
-              {
-                "field": "마지막 활동",
-                "desc": false
-              }
-            ]
-          }
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s",
-          "decimals": 0
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "계정"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "title": "이 계정 상세",
-                    "url": "/d/claude-by-account?var-account=${__value.text}"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "사용자"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "title": "이 멤버 상세",
-                    "url": "/d/claude-by-person?var-member=${__value.text}"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      "options": {
-        "sortBy": [
-          {
-            "displayName": "마지막 활동",
-            "desc": false
-          }
-        ]
-      }
-    },
-    {
       "id": 10,
       "type": "table",
       "title": "🔑 계정 현황 (한도 · 소진 예상 ▸ 펼치면 사용자/PC · 초기화 옆 남음=초기화까지 시간)",
@@ -150,7 +41,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 6
+        "y": 0
       },
       "datasource": {
         "type": "prometheus",
@@ -762,7 +653,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 8
       },
       "datasource": {
         "type": "prometheus",
@@ -1041,7 +932,7 @@
         "h": 5,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 20
       },
       "datasource": {
         "type": "prometheus",
