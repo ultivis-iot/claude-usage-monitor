@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 65,
+  "version": 66,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -142,8 +142,8 @@
               "Value #I": "소진 예상",
               "Value #K": "Weekly 남음",
               "Value #L": "세션 남음",
-              "act_dot": "활동_행",
-              "Value #M": "활동"
+              "act_dot": "활동",
+              "Value #M": "활동_집계"
             },
             "indexByName": {
               "account": 0,
@@ -245,7 +245,7 @@
                 ],
                 "operation": "aggregate"
               },
-              "활동": {
+              "활동_집계": {
                 "aggregations": [
                   "min"
                 ],
@@ -577,19 +577,19 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "활동_행"
+              "options": "활동"
             },
             "properties": [
               {
                 "id": "custom.width",
-                "value": 60
+                "value": 45
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "활동 (min)"
+              "options": "활동_집계 (min)"
             },
             "properties": [
               {
@@ -639,7 +639,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 60
+                "value": 45
               }
             ]
           }
@@ -720,8 +720,8 @@
               "Value #B": "토큰",
               "Value #C": "세션 총합",
               "Value #D": "토큰 총합",
-              "act_dot": "활동_행",
-              "Value #E": "활동"
+              "act_dot": "활동",
+              "Value #E": "활동_집계"
             },
             "indexByName": {
               "member": 0,
@@ -781,7 +781,7 @@
                 ],
                 "operation": "aggregate"
               },
-              "활동": {
+              "활동_집계": {
                 "aggregations": [
                   "min"
                 ],
@@ -865,19 +865,19 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "활동_행"
+              "options": "활동"
             },
             "properties": [
               {
                 "id": "custom.width",
-                "value": 60
+                "value": 45
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "활동 (min)"
+              "options": "활동_집계 (min)"
             },
             "properties": [
               {
@@ -927,7 +927,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 60
+                "value": 45
               }
             ]
           }
