@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 61,
+  "version": 64,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -109,13 +109,7 @@
           "refId": "L"
         },
         {
-          "expr": "label_replace((time() - max by (user_email,member,host_name)(timestamp(claude_code_token_usage_tokens_total))) < 600, \"act_dot\", \"🟢\", \"member\", \"(.*)\")\nor\nlabel_replace((time() - max by (user_email,member,host_name)(timestamp(claude_code_token_usage_tokens_total))) >= 600, \"act_dot\", \"🔴\", \"member\", \"(.*)\")",
-          "format": "table",
-          "instant": true,
-          "refId": "N"
-        },
-        {
-          "expr": "label_replace(time() - max by (user_email,member,host_name)(timestamp(claude_code_token_usage_tokens_total)), \"account\", \"$1\", \"user_email\", \"(.+)\")",
+          "expr": "label_replace(label_replace(min by (user_email,member,host_name)(lag(claude_code_token_usage_tokens_total[$__range])) < 600, \"account\", \"$1\", \"user_email\", \"(.+)\"), \"act_dot\", \"🟢\", \"member\", \"(.*)\")\nor\nlabel_replace(label_replace(min by (user_email,member,host_name)(lag(claude_code_token_usage_tokens_total[$__range])) >= 600, \"account\", \"$1\", \"user_email\", \"(.+)\"), \"act_dot\", \"🔴\", \"member\", \"(.*)\")",
           "format": "table",
           "instant": true,
           "refId": "M"
@@ -149,7 +143,6 @@
               "Value #K": "Weekly 남음",
               "Value #L": "세션 남음",
               "act_dot": "활동_행",
-              "grp_dot": "활동",
               "Value #M": "활동"
             },
             "indexByName": {
@@ -167,7 +160,7 @@
               "Value #G": 13,
               "Value #H": 14,
               "act_dot": 2,
-              "grp_dot": 1
+              "Value #M": 1
             }
           }
         },
@@ -710,13 +703,7 @@
           "refId": "D"
         },
         {
-          "expr": "label_replace((time() - max by (member,user_email,host_name)(timestamp(claude_code_token_usage_tokens_total))) < 600, \"act_dot\", \"🟢\", \"member\", \"(.*)\")\nor\nlabel_replace((time() - max by (member,user_email,host_name)(timestamp(claude_code_token_usage_tokens_total))) >= 600, \"act_dot\", \"🔴\", \"member\", \"(.*)\")",
-          "format": "table",
-          "instant": true,
-          "refId": "F"
-        },
-        {
-          "expr": "time() - max by (member,user_email,host_name)(timestamp(claude_code_token_usage_tokens_total))",
+          "expr": "label_replace(min by (member,user_email,host_name)(lag(claude_code_token_usage_tokens_total[$__range])) < 600, \"act_dot\", \"🟢\", \"member\", \"(.*)\")\nor\nlabel_replace(min by (member,user_email,host_name)(lag(claude_code_token_usage_tokens_total[$__range])) >= 600, \"act_dot\", \"🔴\", \"member\", \"(.*)\")",
           "format": "table",
           "instant": true,
           "refId": "E"
@@ -743,7 +730,6 @@
               "Value #C": "세션 총합",
               "Value #D": "토큰 총합",
               "act_dot": "활동_행",
-              "grp_dot": "활동",
               "Value #E": "활동"
             },
             "indexByName": {
@@ -755,7 +741,7 @@
               "Value #A": 7,
               "Value #B": 8,
               "act_dot": 2,
-              "grp_dot": 1
+              "Value #E": 1
             }
           }
         },
