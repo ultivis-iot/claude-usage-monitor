@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 55,
+  "version": 56,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -592,39 +592,14 @@
               },
               {
                 "id": "unit",
-                "value": "none"
+                "value": "s"
               },
               {
                 "id": "custom.cellOptions",
                 "value": {
-                  "type": "color-text"
+                  "type": "color-background",
+                  "mode": "basic"
                 }
-              },
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "type": "range",
-                    "options": {
-                      "from": -1000000000000,
-                      "to": 1000000000000,
-                      "result": {
-                        "text": "●",
-                        "index": 0
-                      }
-                    }
-                  },
-                  {
-                    "type": "special",
-                    "options": {
-                      "match": "nan",
-                      "result": {
-                        "text": "●",
-                        "index": 1
-                      }
-                    }
-                  }
-                ]
               },
               {
                 "id": "thresholds",
@@ -644,7 +619,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 60
+                "value": 70
               }
             ]
           }
@@ -885,39 +860,14 @@
               },
               {
                 "id": "unit",
-                "value": "none"
+                "value": "s"
               },
               {
                 "id": "custom.cellOptions",
                 "value": {
-                  "type": "color-text"
+                  "type": "color-background",
+                  "mode": "basic"
                 }
-              },
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "type": "range",
-                    "options": {
-                      "from": -1000000000000,
-                      "to": 1000000000000,
-                      "result": {
-                        "text": "●",
-                        "index": 0
-                      }
-                    }
-                  },
-                  {
-                    "type": "special",
-                    "options": {
-                      "match": "nan",
-                      "result": {
-                        "text": "●",
-                        "index": 1
-                      }
-                    }
-                  }
-                ]
               },
               {
                 "id": "thresholds",
@@ -937,7 +887,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 60
+                "value": 70
               }
             ]
           }
