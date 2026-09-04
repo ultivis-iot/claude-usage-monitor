@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 54,
+  "version": 55,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -582,76 +582,8 @@
           },
           {
             "matcher": {
-              "id": "byName",
-              "options": "활동 (min)"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "활동"
-              },
-              {
-                "id": "unit",
-                "value": "none"
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-text"
-                }
-              },
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "type": "range",
-                    "options": {
-                      "from": -1000000000000,
-                      "to": 1000000000000,
-                      "result": {
-                        "text": "●",
-                        "index": 0
-                      }
-                    }
-                  },
-                  {
-                    "type": "special",
-                    "options": {
-                      "match": "nan",
-                      "result": {
-                        "text": "●",
-                        "index": 1
-                      }
-                    }
-                  }
-                ]
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": null
-                    },
-                    {
-                      "color": "red",
-                      "value": 600
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 60
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "활동_행"
+              "id": "byRegexp",
+              "options": "^활동"
             },
             "properties": [
               {
@@ -943,76 +875,8 @@
           },
           {
             "matcher": {
-              "id": "byName",
-              "options": "활동 (min)"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "활동"
-              },
-              {
-                "id": "unit",
-                "value": "none"
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-text"
-                }
-              },
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "type": "range",
-                    "options": {
-                      "from": -1000000000000,
-                      "to": 1000000000000,
-                      "result": {
-                        "text": "●",
-                        "index": 0
-                      }
-                    }
-                  },
-                  {
-                    "type": "special",
-                    "options": {
-                      "match": "nan",
-                      "result": {
-                        "text": "●",
-                        "index": 1
-                      }
-                    }
-                  }
-                ]
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": null
-                    },
-                    {
-                      "color": "red",
-                      "value": 600
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 60
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "활동_행"
+              "id": "byRegexp",
+              "options": "^활동"
             },
             "properties": [
               {
