@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 57,
+  "version": 58,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -113,6 +113,12 @@
           "format": "table",
           "instant": true,
           "refId": "M"
+        },
+        {
+          "expr": "label_replace(time() - max by (user_email,member,host_name)(timestamp(claude_code_token_usage_tokens_total)), \"account\", \"$1\", \"user_email\", \"(.+)\")",
+          "format": "table",
+          "instant": true,
+          "refId": "N"
         }
       ],
       "transformations": [
@@ -142,11 +148,13 @@
               "Value #I": "소진 예상",
               "Value #K": "Weekly 남음",
               "Value #L": "세션 남음",
-              "Value #M": "활동"
+              "Value #M": "활동",
+              "Value #N": "활동_행"
             },
             "indexByName": {
               "account": 0,
               "Value #M": 1,
+              "Value #N": 2,
               "Value #A": 3,
               "Value #I": 4,
               "Value #C": 5,
@@ -574,8 +582,8 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "^활동"
+              "id": "byName",
+              "options": "활동 (min)"
             },
             "properties": [
               {
@@ -584,34 +592,123 @@
               },
               {
                 "id": "unit",
-                "value": "s"
+                "value": "none"
               },
               {
                 "id": "custom.cellOptions",
                 "value": {
-                  "type": "color-background",
-                  "mode": "basic"
+                  "type": "color-text"
                 }
               },
               {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": null
-                    },
-                    {
-                      "color": "red",
-                      "value": 600
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": -1000000000000,
+                      "to": 600,
+                      "result": {
+                        "text": "●",
+                        "color": "green",
+                        "index": 0
+                      }
                     }
-                  ]
-                }
+                  },
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": 600,
+                      "to": 1000000000000,
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 1
+                      }
+                    }
+                  },
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "nan",
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 2
+                      }
+                    }
+                  }
+                ]
               },
               {
                 "id": "custom.width",
-                "value": 70
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "활동_행"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "활동"
+              },
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": -1000000000000,
+                      "to": 600,
+                      "result": {
+                        "text": "●",
+                        "color": "green",
+                        "index": 0
+                      }
+                    }
+                  },
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": 600,
+                      "to": 1000000000000,
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 1
+                      }
+                    }
+                  },
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "nan",
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 2
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.width",
+                "value": 60
               }
             ]
           }
@@ -670,6 +767,12 @@
           "format": "table",
           "instant": true,
           "refId": "E"
+        },
+        {
+          "expr": "time() - max by (member,user_email,host_name)(timestamp(claude_code_token_usage_tokens_total))",
+          "format": "table",
+          "instant": true,
+          "refId": "F"
         }
       ],
       "transformations": [
@@ -692,11 +795,13 @@
               "Value #B": "토큰",
               "Value #C": "세션 총합",
               "Value #D": "토큰 총합",
-              "Value #E": "활동"
+              "Value #E": "활동",
+              "Value #F": "활동_행"
             },
             "indexByName": {
               "member": 0,
               "Value #E": 1,
+              "Value #F": 2,
               "Value #C": 3,
               "Value #D": 4,
               "user_email": 5,
@@ -834,8 +939,8 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "^활동"
+              "id": "byName",
+              "options": "활동 (min)"
             },
             "properties": [
               {
@@ -844,34 +949,123 @@
               },
               {
                 "id": "unit",
-                "value": "s"
+                "value": "none"
               },
               {
                 "id": "custom.cellOptions",
                 "value": {
-                  "type": "color-background",
-                  "mode": "basic"
+                  "type": "color-text"
                 }
               },
               {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": null
-                    },
-                    {
-                      "color": "red",
-                      "value": 600
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": -1000000000000,
+                      "to": 600,
+                      "result": {
+                        "text": "●",
+                        "color": "green",
+                        "index": 0
+                      }
                     }
-                  ]
-                }
+                  },
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": 600,
+                      "to": 1000000000000,
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 1
+                      }
+                    }
+                  },
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "nan",
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 2
+                      }
+                    }
+                  }
+                ]
               },
               {
                 "id": "custom.width",
-                "value": 70
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "활동_행"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "활동"
+              },
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": -1000000000000,
+                      "to": 600,
+                      "result": {
+                        "text": "●",
+                        "color": "green",
+                        "index": 0
+                      }
+                    }
+                  },
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": 600,
+                      "to": 1000000000000,
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 1
+                      }
+                    }
+                  },
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "nan",
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 2
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.width",
+                "value": 60
               }
             ]
           }
