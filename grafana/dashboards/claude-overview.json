@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 56,
+  "version": 57,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -113,12 +113,6 @@
           "format": "table",
           "instant": true,
           "refId": "M"
-        },
-        {
-          "expr": "label_replace(time() - max by (user_email,member,host_name)(timestamp(claude_code_token_usage_tokens_total)), \"account\", \"$1\", \"user_email\", \"(.+)\")",
-          "format": "table",
-          "instant": true,
-          "refId": "N"
         }
       ],
       "transformations": [
@@ -148,13 +142,11 @@
               "Value #I": "소진 예상",
               "Value #K": "Weekly 남음",
               "Value #L": "세션 남음",
-              "Value #M": "활동",
-              "Value #N": "활동_행"
+              "Value #M": "활동"
             },
             "indexByName": {
               "account": 0,
               "Value #M": 1,
-              "Value #N": 2,
               "Value #A": 3,
               "Value #I": 4,
               "Value #C": 5,
@@ -678,12 +670,6 @@
           "format": "table",
           "instant": true,
           "refId": "E"
-        },
-        {
-          "expr": "time() - max by (member,user_email,host_name)(timestamp(claude_code_token_usage_tokens_total))",
-          "format": "table",
-          "instant": true,
-          "refId": "F"
         }
       ],
       "transformations": [
@@ -706,13 +692,11 @@
               "Value #B": "토큰",
               "Value #C": "세션 총합",
               "Value #D": "토큰 총합",
-              "Value #E": "활동",
-              "Value #F": "활동_행"
+              "Value #E": "활동"
             },
             "indexByName": {
               "member": 0,
               "Value #E": 1,
-              "Value #F": 2,
               "Value #C": 3,
               "Value #D": 4,
               "user_email": 5,
