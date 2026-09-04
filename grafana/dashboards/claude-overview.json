@@ -5,7 +5,7 @@
     "claude"
   ],
   "schemaVersion": 39,
-  "version": 60,
+  "version": 61,
   "refresh": "30s",
   "timezone": "browser",
   "time": {
@@ -115,7 +115,7 @@
           "refId": "N"
         },
         {
-          "expr": "label_replace((label_replace((sum by (user_email,member,host_name)(increase(claude_code_session_count_total[$__range])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") * on(account) group_left() label_replace((min by (user_email)(time() - max by (user_email,member,host_name)(timestamp(claude_code_token_usage_tokens_total))) < bool 600), \"account\", \"$1\", \"user_email\", \"(.+)\")) == 1, \"grp_dot\", \"🟢\", \"account\", \"(.*)\")\nor\nlabel_replace((label_replace((sum by (user_email,member,host_name)(increase(claude_code_session_count_total[$__range])) > bool 0), \"account\", \"$1\", \"user_email\", \"(.+)\") * on(account) group_left() label_replace((min by (user_email)(time() - max by (user_email,member,host_name)(timestamp(claude_code_token_usage_tokens_total))) < bool 600), \"account\", \"$1\", \"user_email\", \"(.+)\")) == 0, \"grp_dot\", \"🔴\", \"account\", \"(.*)\")",
+          "expr": "label_replace(time() - max by (user_email,member,host_name)(timestamp(claude_code_token_usage_tokens_total)), \"account\", \"$1\", \"user_email\", \"(.+)\")",
           "format": "table",
           "instant": true,
           "refId": "M"
@@ -149,7 +149,8 @@
               "Value #K": "Weekly 남음",
               "Value #L": "세션 남음",
               "act_dot": "활동_행",
-              "grp_dot": "활동"
+              "grp_dot": "활동",
+              "Value #M": "활동"
             },
             "indexByName": {
               "account": 0,
@@ -253,7 +254,7 @@
               },
               "활동": {
                 "aggregations": [
-                  "max"
+                  "min"
                 ],
                 "operation": "aggregate"
               }
@@ -595,12 +596,62 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "활동 (max)"
+              "options": "활동 (min)"
             },
             "properties": [
               {
                 "id": "displayName",
                 "value": "활동"
+              },
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": -1000000000000,
+                      "to": 600,
+                      "result": {
+                        "text": "●",
+                        "color": "green",
+                        "index": 0
+                      }
+                    }
+                  },
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": 600,
+                      "to": 1000000000000,
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 1
+                      }
+                    }
+                  },
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "nan",
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 2
+                      }
+                    }
+                  }
+                ]
               },
               {
                 "id": "custom.width",
@@ -665,7 +716,7 @@
           "refId": "F"
         },
         {
-          "expr": "label_replace(((sum by (member,user_email,host_name)(increase(claude_code_session_count_total[$__range])) > bool 0) * on(member) group_left() (min by (member)(time() - max by (member,user_email,host_name)(timestamp(claude_code_token_usage_tokens_total))) < bool 600)) == 1, \"grp_dot\", \"🟢\", \"member\", \"(.*)\")\nor\nlabel_replace(((sum by (member,user_email,host_name)(increase(claude_code_session_count_total[$__range])) > bool 0) * on(member) group_left() (min by (member)(time() - max by (member,user_email,host_name)(timestamp(claude_code_token_usage_tokens_total))) < bool 600)) == 0, \"grp_dot\", \"🔴\", \"member\", \"(.*)\")",
+          "expr": "time() - max by (member,user_email,host_name)(timestamp(claude_code_token_usage_tokens_total))",
           "format": "table",
           "instant": true,
           "refId": "E"
@@ -692,7 +743,8 @@
               "Value #C": "세션 총합",
               "Value #D": "토큰 총합",
               "act_dot": "활동_행",
-              "grp_dot": "활동"
+              "grp_dot": "활동",
+              "Value #E": "활동"
             },
             "indexByName": {
               "member": 0,
@@ -754,7 +806,7 @@
               },
               "활동": {
                 "aggregations": [
-                  "max"
+                  "min"
                 ],
                 "operation": "aggregate"
               }
@@ -848,12 +900,62 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "활동 (max)"
+              "options": "활동 (min)"
             },
             "properties": [
               {
                 "id": "displayName",
                 "value": "활동"
+              },
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": -1000000000000,
+                      "to": 600,
+                      "result": {
+                        "text": "●",
+                        "color": "green",
+                        "index": 0
+                      }
+                    }
+                  },
+                  {
+                    "type": "range",
+                    "options": {
+                      "from": 600,
+                      "to": 1000000000000,
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 1
+                      }
+                    }
+                  },
+                  {
+                    "type": "special",
+                    "options": {
+                      "match": "nan",
+                      "result": {
+                        "text": "●",
+                        "color": "red",
+                        "index": 2
+                      }
+                    }
+                  }
+                ]
               },
               {
                 "id": "custom.width",
